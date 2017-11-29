@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/main">
+
+
+    <EditText
+        android:id="@+id/editTextId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Id" />
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editTextId"
+        android:layout_alignStart="@+id/editTextId"
+        android:layout_below="@+id/editTextId"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name" />
+
+    <EditText
+        android:id="@+id/editTextQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editTextName"
+        android:layout_alignStart="@+id/editTextName"
+        android:layout_below="@+id/editTextName"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Quantity" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INSERT ITEM"
+        android:id="@+id/insert"
+        android:layout_below="@+id/editTextQuantity"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SHOW ITEMS"
+        android:id="@+id/showItems"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/insert"
+        android:layout_alignStart="@+id/insert" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView"
+        android:layout_below="@+id/insert"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/showItems"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextId"
+        android:layout_alignBottom="@+id/editTextId"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+
+        android:text="Id" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextName"
+        android:layout_alignBottom="@+id/editTextName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+
+        android:text="Name" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextQuantity"
+        android:layout_alignBottom="@+id/editTextQuantity"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="17dp"
+        android:layout_marginRight="17dp"
+
+        android:layout_toLeftOf="@+id/editTextQuantity"
+        android:layout_toStartOf="@+id/editTextQuantity"
+        android:text="Quantity" />
+
+
+</RelativeLayout>
