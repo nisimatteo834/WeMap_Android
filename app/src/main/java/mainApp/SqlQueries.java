@@ -35,7 +35,7 @@ public class SqlQueries {
         return httpEntity;
     }
 
-    public JSONArray GetAllRooms() {
+    public JSONArray getAllRooms() {
 
         String url = "http://192.168.1.65/get_allrooms.php";
         HttpEntity httpEntity = null;
@@ -71,7 +71,7 @@ public class SqlQueries {
         return jsonArray;
     }
 
-    public JSONArray GetNamesAllRooms() {
+    public JSONArray getNamesAllRooms() {
 
         String url = "http://192.168.1.65/get_names_allrooms.php";
         HttpEntity httpEntity = null;
