@@ -5,6 +5,7 @@ android {
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.example.android.sometests"
+        useLibrary 'org.apache.http.legacy'
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
