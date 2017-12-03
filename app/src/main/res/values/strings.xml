@@ -7,5 +7,12 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_measurement">Measurement</string>
     <string name="load">Load</string>
+    <string name="ssid">SSID</string>
+    <string name="ip">IP</string>
+    <string name="gateway">Gateway</string>
+    <string name="mac">MAC</string>
+    <string name="rssi">RSSI</string>ù
+    <string name="speed">Speed</string>
+
 
 </resources>
