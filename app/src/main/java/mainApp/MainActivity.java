@@ -12,6 +12,10 @@ import android.provider.Settings;
 import android.text.format.Formatter;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+
+import java.net.MalformedURLException;
+
 import mainApp.R;
 
 
@@ -19,6 +23,7 @@ public class MainActivity extends Activity
 {
     LocationManager locationManager = null;
     WifiManager wifi = null;
+    SqlQueries sqlquery = new SqlQueries();
 
 
     @Override
@@ -29,7 +34,11 @@ public class MainActivity extends Activity
         wifi = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
 
-        this.updateValues();
+        try {
+            this.updateValues();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -45,7 +54,11 @@ public class MainActivity extends Activity
 
     protected  void onResume(){
         super.onResume();
-        this.updateValues();
+        try {
+            this.updateValues();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -53,7 +66,7 @@ public class MainActivity extends Activity
         super.onDestroy();
     }
 
-    private void updateValues(){
+    private void updateValues() throws MalformedURLException {
 
         this.checkWifi();
         this.checkGPS();
@@ -80,6 +93,9 @@ public class MainActivity extends Activity
         GW.setText(Formatter.formatIpAddress(wifi.getDhcpInfo().gateway));
 
         System.out.println("ciao");
+        JSONArray jsonArray = null;
+
+        jsonArray = sqlquery.getNamesAllRooms();
 
 
     }

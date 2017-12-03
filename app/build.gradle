@@ -5,6 +5,7 @@ android {
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.example.android.sometests"
+        applicationId "com.androidbash.androidbashphpmysql"
         useLibrary 'org.apache.http.legacy'
         minSdkVersion 15
         targetSdkVersion 25
@@ -30,4 +31,7 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
     compile 'com.android.volley:volley:1.0.0'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 }
