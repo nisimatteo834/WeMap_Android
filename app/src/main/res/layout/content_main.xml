@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.android.sometests.MainActivity"
+    tools:context="mainApp.MainActivity"
     tools:showIn="@layout/activity_main">
 
     <TableLayout
@@ -22,7 +22,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="150dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:text="SSID" />
 
@@ -38,7 +38,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="150dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:text="IP" />
 
@@ -54,7 +54,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="150dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:text="GATWEAY" />
 
@@ -70,7 +70,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="150dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:text="MAC" />
 
@@ -81,12 +81,29 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/apMAC"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="MAC AP" />
+
+            <TextView
+                android:id="@+id/apMAC_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+
+        <TableRow
             android:id="@+id/rssi"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="150dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:text="RSSI" />
 
@@ -102,7 +119,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="150dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:text="SPEED" />
 
@@ -112,6 +129,69 @@
                 android:layout_height="wrap_content" />
         </TableRow>
 
+        <TableRow
+            android:id="@+id/latitude"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Lat." />
+
+            <TextView
+                android:id="@+id/latitude_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/longitude"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Long." />
+
+            <TextView
+                android:id="@+id/longitude_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/accuracy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Accuracy" />
+
+            <TextView
+                android:id="@+id/accuracy_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/accesspoints"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="APs" />
+
+            <TextView
+                android:id="@+id/accespoints_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
 
         <TableRow
                 android:id="@+id/progressBar_power"
@@ -120,10 +200,12 @@
         <ProgressBar
             android:id="@+id/progressBar_power_value"
             style="?android:attr/progressBarStyle"
-            android:layout_width="150dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content" />
 
         </TableRow>
+
+
 
 
     </TableLayout>
