@@ -93,10 +93,6 @@ public class MainActivity extends Activity
         GW.setText(Formatter.formatIpAddress(wifi.getDhcpInfo().gateway));
 
         System.out.println("ciao");
-        JSONArray jsonArray = null;
-
-        jsonArray = sqlquery.getNamesAllRooms();
-
 
     }
 

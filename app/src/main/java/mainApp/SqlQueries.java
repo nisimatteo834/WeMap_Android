@@ -1,101 +1,83 @@
+
 package mainApp;
-import android.os.AsyncTask;
-import android.util.Log;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
-import java.io.IOException;
-import java.net.URL;
+import org.json.JSONObject;
 
-
-/**
- * Created by Navid on 12/1/2017.
- */
-
-class DownloadFilesTask extends AsyncTask<String, String, HttpEntity> {
+public class SqlQueries extends AppCompatActivity {
+    Button show;
+    RequestQueue requestQueue;
+    String showUrl = "http://192.168.1.65/get_names_allrooms.php";
+    TextView result;
 
     @Override
-    protected HttpEntity doInBackground(String... urls) {
-        HttpEntity httpEntity = null;
-        try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();  // Default HttpClient
-            System.out.println(String.valueOf(urls));
-            HttpPost httpPost = new HttpPost(String.valueOf(urls));
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            httpEntity = httpResponse.getEntity();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        } catch (ClientProtocolException e) {
-            // Signals error in http protocol
-            e.printStackTrace();
-            //Log Errors Here
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return httpEntity;
-    }}
+        show = (Button) findViewById(R.id.buttonShow);
+        result = (TextView) findViewById(R.id.textViewResult);
 
-public class SqlQueries {
-    public JSONArray getAllRooms() {
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
 
-        String url = "http://192.168.1.65/get_allrooms.php";
-        HttpEntity httpEntity = null;
-        httpEntity = (HttpEntity) new DownloadFilesTask().execute(url);//readingUrl(url);
-        /*
-        HttpEntity httpEntity = null;
-        try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();  // Default HttpClient
-            HttpPost httpPost = new HttpPost(url);
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            httpEntity = httpResponse.getEntity();
+        show.setOnClickListener(new View.OnClickListener() {
 
-        } catch (ClientProtocolException e) {
-        // Signals error in http protocol
-        e.printStackTrace();
-        //Log Errors Here
-        } catch (IOException e) {
-        e.printStackTrace();
-        }*/
-        // Convert HttpEntity into JSON Array
-        JSONArray jsonArray = null;
-        if (httpEntity != null) {
-            try {
-                String entityResponse = EntityUtils.toString(httpEntity);
-                Log.e("Entity Response  : ", entityResponse);
-                jsonArray = new JSONArray(entityResponse);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            @Override
+            public void onClick(View view) {
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.GET, showUrl, null, new Response.Listener<JSONObject>() {
+
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                //System.out.println(response.toString());
+                                try {
+                                    JSONArray allrooms = response.getJSONArray("allrooms");
+                                    for (int i = 0; i < allrooms.length(); i++) {
+                                        JSONObject room = allrooms.getJSONObject(i);
+
+                                        String building = room.getString("building");
+                                        String name = room.getString("name");
+                                        String floor = room.getString("floor");
+                                        String campus = room.getString("campus");
+
+                                        result.append(building + " " + name + " " + floor + " " + campus + " \n");
+                                    }
+                                    result.append("===\n");
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                System.out.append(error.getMessage());
+
+                            }
+                        });
+                requestQueue.add(jsonObjectRequest);
             }
-        }
-        return jsonArray;
+        });
+
+
     }
 
-    public JSONArray getNamesAllRooms() {
 
-        String url = "http://192.168.1.65/get_names_allrooms.php";
-        HttpEntity httpEntity = null;
-        httpEntity = (HttpEntity) new DownloadFilesTask().execute(url);
-        //httpEntity = readingUrl(url);
-        // Convert HttpEntity into JSON Array
-        JSONArray jsonArray = null;
-        if (httpEntity != null) {
-            try {
-                String entityResponse = EntityUtils.toString(httpEntity);
-                Log.e("Entity Response  : ", entityResponse);
-                jsonArray = new JSONArray(entityResponse);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return jsonArray;
-    }
 }
