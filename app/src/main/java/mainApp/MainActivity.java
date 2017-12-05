@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,12 +24,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.test.mock.MockApplication;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public boolean isNetworkEnabled;
     public boolean locationServiceAvailable;
     int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 150;
+    private static final double DISTANCE_MHZ_M = 27.55;
+    private static final int MIN_RSSI = -100;
+    private static final int MAX_RSSI = -55;
+    private GpsStatus mGpsStatus = null;
 
 
     //boh
@@ -66,9 +74,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+
 
         this.initLocationService(MainActivity.this);
         this.updateValues();
@@ -133,17 +144,62 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         TextView GW = (TextView) findViewById(R.id.gateway_value);
         GW.setText(gw);
 
-        ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar_power_value);
-
-        pb.setMax(200);
-        pb.setProgress(rssi);
-
         TextView accesspoints = (TextView) findViewById(R.id.accespoints_list);
         accesspoints.setText(this.ScanAP());
 
+        TextView distance = (TextView) findViewById(R.id.distance_value);
+
+        String[] freqAndLevel = this.getFrequencyAndLevel().split(",");
+        System.out.println(freqAndLevel.toString());
+
+        distance.setText(String.valueOf(this.calculateDistance(Integer.parseInt(freqAndLevel[0]),Integer.parseInt(freqAndLevel[1]))));
+
+        TextView device = (TextView) findViewById(R.id.device_value);
+        device.setText(Device.getDeviceName());
+
+
+    }
+
+    private void updateCoordinates(Location location) {
+
+        Double lon = location.getLongitude();
+        Double lat = location.getLatitude();
+        Float accuracy = location.getAccuracy();
+
+        TextView lat_tv = (TextView) findViewById(R.id.latitude_value);
+        lat_tv.setText(String.valueOf(lat));
+
+        TextView lon_tv = (TextView) findViewById(R.id.longitude_value);
+        lon_tv.setText(String.valueOf(lon));
+
+        TextView accuracy_tv = (TextView) findViewById(R.id.accuracy_value);
+        accuracy_tv.setText(String.valueOf(accuracy));
+
+        TextView siv = (TextView) findViewById(R.id.siv_value);
+        siv.setText(String.valueOf(this.getSatsInView(getApplicationContext())));
+
+        TextView siu = (TextView) findViewById(R.id.siu_value);
+        siu.setText(String.valueOf(this.getSatsInUse(getApplicationContext())));
+
+
+    }
+
+    private String getFrequencyAndLevel() {
+        Iterator<ScanResult> iterator = wifi.getScanResults().iterator();
+        int frequency = 0;
+
+
+        List<AccessPoint> aps = new ArrayList();
+        while (iterator.hasNext()) {
+            ScanResult next = iterator.next();
+            if (next.BSSID.equals(wifi.getConnectionInfo().getBSSID())) {
+                return String.valueOf(next.frequency) + "," + String.valueOf(next.level);
+            }
+
 
         }
-
+        return null;
+    }
 
     private String ScanAP() {
         Iterator<ScanResult> iterator = wifi.getScanResults().iterator();
@@ -168,6 +224,142 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         return accesspoints;
     }
 
+    private int getSatsInView(Context context) {
+
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            }
+        }
+
+        try   {
+            this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            Location locationNetwork = null;
+            Location locationGPS = null;
+
+            // Get GPS and network status
+            this.isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            if (forceNetwork) isGPSEnabled = false;
+
+            if (isGPSEnabled)  {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+
+                if (locationManager != null)  {
+                    mGpsStatus = locationManager.getGpsStatus(mGpsStatus);
+                    Iterable<GpsSatellite> satellites = mGpsStatus.getSatellites();
+                    int iTempCountInView = 0;
+                    int iTempCountInUse = 0;
+                    if (satellites != null) {
+                        for (GpsSatellite gpsSatellite : satellites) {
+                            iTempCountInView++;
+                            if (gpsSatellite.usedInFix()) {
+                                iTempCountInUse++;
+                            }
+                        }
+                        return iTempCountInView;
+                    }
+
+                    return 0;
+
+                }
+            }
+        } catch (Exception ex)  {
+            View mLayout = findViewById(R.id.main_activity);
+            Snackbar.make(mLayout, ex.getMessage(),
+                    Snackbar.LENGTH_SHORT)
+                    .show();
+
+            System.out.println( "Error getting sats in view: " + ex.getMessage() );
+
+        }
+        return 0;
+    }
+
+    private int getSatsInUse(Context context) {
+
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            }
+        }
+
+        try   {
+            this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            Location locationNetwork = null;
+            Location locationGPS = null;
+
+            // Get GPS and network status
+            this.isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            if (forceNetwork) isGPSEnabled = false;
+
+            if (isGPSEnabled)  {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+
+                if (locationManager != null)  {
+                    mGpsStatus = locationManager.getGpsStatus(mGpsStatus);
+                    Iterable<GpsSatellite> satellites = mGpsStatus.getSatellites();
+                    int iTempCountInView = 0;
+                    int iTempCountInUse = 0;
+                    if (satellites != null) {
+                        for (GpsSatellite gpsSatellite : satellites) {
+                            iTempCountInView++;
+                            if (gpsSatellite.usedInFix()) {
+                                iTempCountInUse++;
+                            }
+                        }
+                        return iTempCountInUse;
+                    }
+
+                    return 0;
+
+                }
+            }
+        } catch (Exception ex)  {
+            View mLayout = findViewById(R.id.main_activity);
+            Snackbar.make(mLayout, ex.getMessage(),
+                    Snackbar.LENGTH_SHORT)
+                    .show();
+
+            System.out.println( "Error getting sats in use: " + ex.getMessage() );
+
+        }
+        return 0;
+    }
+
 
     private void initLocationService(Context context) {
 
@@ -179,10 +371,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                View mLayout = findViewById(R.id.main_activity);
-                Snackbar.make(mLayout, "Explaining you why...",
-                        Snackbar.LENGTH_SHORT)
-                        .show();
 
             } else {
 
@@ -213,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 // cannot get location
                 this.locationServiceAvailable = false;
             }
-            //else
+            else
             {
                 this.locationServiceAvailable = true;
 
@@ -233,8 +421,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                     if (locationManager != null)  {
                         locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    }
-                }
+
+                                }
+                            }
+                        }
+
 
                 if (locationGPS != null && locationNetwork != null)
                 {
@@ -275,8 +466,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             .show();
                 }
 
-
-            }
         } catch (Exception ex)  {
             View mLayout = findViewById(R.id.main_activity);
             Snackbar.make(mLayout, ex.getMessage(),
@@ -311,23 +500,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         // END_INCLUDE(onRequestPermissionsResult)
     }
 
-    private void updateCoordinates(Location location) {
-
-        Double lon = location.getLongitude();
-        Double lat = location.getLatitude();
-        Float accuracy = location.getAccuracy();
-
-        TextView lat_tv = (TextView) findViewById(R.id.latitude_value);
-        lat_tv.setText(String.valueOf(lat));
-
-        TextView lon_tv = (TextView) findViewById(R.id.longitude_value);
-        lon_tv.setText(String.valueOf(lon));
-
-        TextView accuracy_tv = (TextView) findViewById(R.id.accuracy_value);
-        accuracy_tv.setText(String.valueOf(accuracy));
-
-
-    }
 
     private boolean isLocationEnabled(LocationManager locationManager) {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
@@ -357,7 +529,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void showAlertWIFI() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("Enable Location")
+        dialog.setTitle("Enable Wifi")
                 .setMessage("Your Wi-Fi is not Enabled.\nPlease Enable Wi-Fi to " +
                         "use this app")
                 .setPositiveButton("Wi-Fi Settings", new DialogInterface.OnClickListener() {
@@ -401,11 +573,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public void onLocationChanged(Location location) {
 
         this.updateCoordinates(location);
-
-        View mLayout = findViewById(R.id.main_activity);
-        Snackbar.make(mLayout, String.valueOf(location.getAccuracy()),
-                Snackbar.LENGTH_SHORT)
-                .show();
+        this.updateValues();
 
     }
 
@@ -430,6 +598,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 Snackbar.LENGTH_SHORT)
                 .show();
 
+    }
+
+    public BigDecimal calculateDistance(int frequency, int level) {
+        BigDecimal bd = new BigDecimal (Double.toString(Math.pow(10.0, (DISTANCE_MHZ_M - (20 * Math.log10(frequency)) + Math.abs(level)) / 20.0)));
+        bd.setScale(2,BigDecimal.ROUND_HALF_UP);
+        return bd;
     }
 
 
