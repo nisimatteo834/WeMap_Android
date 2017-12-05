@@ -1,7 +1,6 @@
 package mainApp;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,37 +12,37 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.test.mock.MockApplication;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+// added by Navid
 
-import fr.bmartel.speedtest.SpeedTestReport;
-import fr.bmartel.speedtest.SpeedTestSocket;
-import fr.bmartel.speedtest.inter.ISpeedTestListener;
-import fr.bmartel.speedtest.model.SpeedTestError;
-import mainApp.R;
+import android.widget.Button;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback,LocationListener {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, LocationListener {
     LocationManager locationManager = null;
     WifiManager wifi = null;
     String locationProvider = LocationManager.GPS_PROVIDER;
@@ -58,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private static final int MIN_RSSI = -100;
     private static final int MAX_RSSI = -55;
     private GpsStatus mGpsStatus = null;
+
+    //added by Navid
+    Button save;
+    RequestQueue requestQueue;
+    String insertUrl = "http://192.168.1.65/insert_test.php";//"http://192.168.1.65/insert.php";
 
 
     //boh
@@ -80,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
 
-
         this.initLocationService(MainActivity.this);
         this.updateValues();
+        this.insertMethod();
 //        new SpeedTestTask().execute();
 //        System.out.println("Prova" + SpeedTestTask.bitrate);
 
@@ -152,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         String[] freqAndLevel = this.getFrequencyAndLevel().split(",");
         System.out.println(freqAndLevel.toString());
 
-        distance.setText(String.valueOf(this.calculateDistance(Integer.parseInt(freqAndLevel[0]),Integer.parseInt(freqAndLevel[1]))));
+        distance.setText(String.valueOf(this.calculateDistance(Integer.parseInt(freqAndLevel[0]), Integer.parseInt(freqAndLevel[1]))));
 
         TextView device = (TextView) findViewById(R.id.device_value);
         device.setText(Device.getDeviceName());
@@ -210,13 +214,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         while (iterator.hasNext()) {
             ScanResult next = iterator.next();
             System.out.println(next.toString());
-            aps.add(new AccessPoint(next.SSID,String.valueOf(0),next.level,next.frequency));
+            aps.add(new AccessPoint(next.SSID, String.valueOf(0), next.level, next.frequency));
         }
 
         Iterator<AccessPoint> iterator1 = aps.iterator();
 
-        while (iterator1.hasNext())
-        {
+        while (iterator1.hasNext()) {
             AccessPoint next = iterator1.next();
             accesspoints = accesspoints + next.toString();
         }
@@ -227,26 +230,21 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private int getSatsInView(Context context) {
 
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
             } else {
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
             }
         }
 
-        try   {
+        try {
             this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Location locationNetwork = null;
             Location locationGPS = null;
@@ -256,12 +254,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
             if (forceNetwork) isGPSEnabled = false;
 
-            if (isGPSEnabled)  {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+            if (isGPSEnabled) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                if (locationManager != null)  {
+                if (locationManager != null) {
                     mGpsStatus = locationManager.getGpsStatus(mGpsStatus);
                     Iterable<GpsSatellite> satellites = mGpsStatus.getSatellites();
                     int iTempCountInView = 0;
@@ -280,13 +276,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                 }
             }
-        } catch (Exception ex)  {
+        } catch (Exception ex) {
             View mLayout = findViewById(R.id.main_activity);
-            Snackbar.make(mLayout, ex.getMessage(),
-                    Snackbar.LENGTH_SHORT)
-                    .show();
+            Snackbar.make(mLayout, ex.getMessage(), Snackbar.LENGTH_SHORT).show();
 
-            System.out.println( "Error getting sats in view: " + ex.getMessage() );
+            System.out.println("Error getting sats in view: " + ex.getMessage());
 
         }
         return 0;
@@ -295,26 +289,21 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private int getSatsInUse(Context context) {
 
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
             } else {
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
             }
         }
 
-        try   {
+        try {
             this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Location locationNetwork = null;
             Location locationGPS = null;
@@ -324,12 +313,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
             if (forceNetwork) isGPSEnabled = false;
 
-            if (isGPSEnabled)  {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+            if (isGPSEnabled) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                if (locationManager != null)  {
+                if (locationManager != null) {
                     mGpsStatus = locationManager.getGpsStatus(mGpsStatus);
                     Iterable<GpsSatellite> satellites = mGpsStatus.getSatellites();
                     int iTempCountInView = 0;
@@ -348,13 +335,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                 }
             }
-        } catch (Exception ex)  {
+        } catch (Exception ex) {
             View mLayout = findViewById(R.id.main_activity);
-            Snackbar.make(mLayout, ex.getMessage(),
-                    Snackbar.LENGTH_SHORT)
-                    .show();
+            Snackbar.make(mLayout, ex.getMessage(), Snackbar.LENGTH_SHORT).show();
 
-            System.out.println( "Error getting sats in use: " + ex.getMessage() );
+            System.out.println("Error getting sats in use: " + ex.getMessage());
 
         }
         return 0;
@@ -364,29 +349,22 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private void initLocationService(Context context) {
 
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
             } else {
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
             }
         }
 
 
-
-
-        try   {
+        try {
             this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Location locationNetwork = null;
             Location locationGPS = null;
@@ -397,104 +375,75 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
             if (forceNetwork) isGPSEnabled = false;
 
-            if (!isNetworkEnabled && !isGPSEnabled)    {
+            if (!isNetworkEnabled && !isGPSEnabled) {
                 // cannot get location
                 this.locationServiceAvailable = false;
-            }
-            else
-            {
+            } else {
                 this.locationServiceAvailable = true;
 
                 if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    if (locationManager != null)   {
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    if (locationManager != null) {
                         locationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     }
                 }//end if
 
-                if (isGPSEnabled)  {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                if (isGPSEnabled) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                    if (locationManager != null)  {
+                    if (locationManager != null) {
                         locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-                                }
-                            }
-                        }
-
-
-                if (locationGPS != null && locationNetwork != null)
-                {
-                    if (locationGPS.getAccuracy() < locationNetwork.getAccuracy())
-                    {
-                        location = locationGPS;
                     }
-                    else
-                    {
-                        location = locationNetwork;
-                    }
+                }
+            }
 
-                    this.updateCoordinates(location);
 
+            if (locationGPS != null && locationNetwork != null) {
+                if (locationGPS.getAccuracy() < locationNetwork.getAccuracy()) {
+                    location = locationGPS;
+                } else {
+                    location = locationNetwork;
                 }
 
-                else if (locationGPS != null || locationNetwork!=null)
-                {
-                    if (locationGPS!=null)
-                    {
-                        location = locationGPS;
-                    }
+                this.updateCoordinates(location);
 
-                    else
-                    {
-                        location = locationNetwork;
-                    }
-
-                    this.updateCoordinates(location);
-
+            } else if (locationGPS != null || locationNetwork != null) {
+                if (locationGPS != null) {
+                    location = locationGPS;
+                } else {
+                    location = locationNetwork;
                 }
 
-                else
-                {
-                    View mLayout = findViewById(R.id.main_activity);
-                    Snackbar.make(mLayout, "Impossible to locate you. Verify your gps is On.",
-                            Snackbar.LENGTH_SHORT)
-                            .show();
-                }
+                this.updateCoordinates(location);
 
-        } catch (Exception ex)  {
+            } else {
+                View mLayout = findViewById(R.id.main_activity);
+                Snackbar.make(mLayout, "Impossible to locate you. Verify your gps is On.", Snackbar.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception ex) {
             View mLayout = findViewById(R.id.main_activity);
-            Snackbar.make(mLayout, ex.getMessage(),
-                    Snackbar.LENGTH_SHORT)
-                    .show();
+            Snackbar.make(mLayout, ex.getMessage(), Snackbar.LENGTH_SHORT).show();
 
-            System.out.println( "Error creating location service: " + ex.getMessage() );
+            System.out.println("Error creating location service: " + ex.getMessage());
 
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // BEGIN_INCLUDE(onRequestPermissionsResult)
         if (requestCode == MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
             // Request for camera permission.
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission has been granted. Start camera preview Activity.
                 View mLayout = findViewById(R.id.main_activity);
-                Snackbar.make(mLayout, "Camera permission was granted. Starting preview.",
-                        Snackbar.LENGTH_SHORT)
-                        .show();
+                Snackbar.make(mLayout, "Camera permission was granted. Starting preview.", Snackbar.LENGTH_SHORT).show();
             } else {
                 // Permission request was denied.
                 View mLayout = findViewById(R.id.main_activity);
-                Snackbar.make(mLayout, "Camera permission request was denied.",
-                        Snackbar.LENGTH_SHORT)
-                        .show();
+                Snackbar.make(mLayout, "Camera permission request was denied.", Snackbar.LENGTH_SHORT).show();
             }
         }
         // END_INCLUDE(onRequestPermissionsResult)
@@ -502,48 +451,39 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
 
     private boolean isLocationEnabled(LocationManager locationManager) {
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     private void showAlertGPS() {
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("Enable Location")
-                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
-                        "use this app")
-                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(myIntent);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    }
-                });
+        dialog.setTitle("Enable Location").setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " + "use this app").setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(myIntent);
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+            }
+        });
         dialog.show();
     }
 
     private void showAlertWIFI() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("Enable Wifi")
-                .setMessage("Your Wi-Fi is not Enabled.\nPlease Enable Wi-Fi to " +
-                        "use this app")
-                .setPositiveButton("Wi-Fi Settings", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        Intent myIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                        startActivity(myIntent);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    }
-                });
+        dialog.setTitle("Enable Wifi").setMessage("Your Wi-Fi is not Enabled.\nPlease Enable Wi-Fi to " + "use this app").setPositiveButton("Wi-Fi Settings", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                Intent myIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivity(myIntent);
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+            }
+        });
         dialog.show();
     }
 
@@ -585,27 +525,65 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     public void onProviderEnabled(String provider) {
         View mLayout = findViewById(R.id.main_activity);
-        Snackbar.make(mLayout, "Provider has been enabled.",
-                Snackbar.LENGTH_SHORT)
-                .show();
+        Snackbar.make(mLayout, "Provider has been enabled.", Snackbar.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void onProviderDisabled(String provider) {
         View mLayout = findViewById(R.id.main_activity);
-        Snackbar.make(mLayout, "Provider has been disabled.",
-                Snackbar.LENGTH_SHORT)
-                .show();
+        Snackbar.make(mLayout, "Provider has been disabled.", Snackbar.LENGTH_SHORT).show();
 
     }
 
     public BigDecimal calculateDistance(int frequency, int level) {
-        BigDecimal bd = new BigDecimal (Double.toString(Math.pow(10.0, (DISTANCE_MHZ_M - (20 * Math.log10(frequency)) + Math.abs(level)) / 20.0)));
-        bd.setScale(2,BigDecimal.ROUND_HALF_UP);
+        BigDecimal bd = new BigDecimal(Double.toString(Math.pow(10.0, (DISTANCE_MHZ_M - (20 * Math.log10(frequency)) + Math.abs(level)) / 20.0)));
+        bd.setScale(2, BigDecimal.ROUND_HALF_UP);
         return bd;
     }
 
+    // added by Navid
+    //@Override
+    //protected void onCreate(Bundle savedInstanceState) {
+
+    public void insertMethod(){
+        //super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        save = (Button) findViewById(R.id.buttonSave);
+
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StringRequest request = new StringRequest(Request.Method.POST, insertUrl, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        System.out.println(response.toString());
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> parameters = new HashMap<String, String>();
+                        parameters.put("id", "10");
+                        parameters.put("name", "test");
+                        parameters.put("quantity", "300");
+
+                        return parameters;
+                    }
+                };
+                requestQueue.add(request);
+            }
+        });
+    }
 
 }
 
