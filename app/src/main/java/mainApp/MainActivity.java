@@ -41,14 +41,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import static android.os.Build.VERSION.SDK;
+
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, LocationListener {
     LocationManager locationManager = null;
     WifiManager wifi = null;
-    String locationProvider = LocationManager.GPS_PROVIDER;
     public Location location;
-    public double longitude;
-    public double latitude;
     public boolean isGPSEnabled;
     public boolean isNetworkEnabled;
     public boolean locationServiceAvailable;
@@ -72,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private final static boolean forceNetwork = false;
 
+
     //private static LocationService instance = null;
 
 
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         setContentView(R.layout.activity_main);
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
 
         this.initLocationService(MainActivity.this);
         this.updateValues();
@@ -167,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         TextView device = (TextView) findViewById(R.id.device_value);
         device.setText(Device.getDeviceName());
+
+
 
 
     }
@@ -355,18 +356,22 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void initLocationService(Context context) {
 
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (android.os.Build.VERSION.SDK_INT >=23) {
 
-            } else {
+            // Here, thisActivity is the current activity
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                // No explanation needed, we can request the permission.
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                } else {
 
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+                }
             }
         }
 
