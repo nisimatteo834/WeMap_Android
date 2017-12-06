@@ -153,10 +153,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         TextView distance = (TextView) findViewById(R.id.distance_value);
 
-        String[] freqAndLevel = this.getFrequencyAndLevel().split(",");
-        System.out.println(freqAndLevel.toString());
+        if(this.getFrequencyAndLevel()!=null)
+        {
+            String[] freqAndLevel = this.getFrequencyAndLevel().split(",");
+            System.out.println(freqAndLevel.toString());
+            distance.setText(String.valueOf(this.calculateDistance(Integer.parseInt(freqAndLevel[0]), Integer.parseInt(freqAndLevel[1]))));
+        }
+        else {
+            distance.setText(String.valueOf(-1));
 
-        distance.setText(String.valueOf(this.calculateDistance(Integer.parseInt(freqAndLevel[0]), Integer.parseInt(freqAndLevel[1]))));
+        }
+
 
         TextView device = (TextView) findViewById(R.id.device_value);
         device.setText(Device.getDeviceName());
