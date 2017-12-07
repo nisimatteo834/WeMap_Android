@@ -41,6 +41,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.w3c.dom.Text;
+
 import static android.os.Build.VERSION.SDK;
 
 
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     //added by Navid
     Button save;
     RequestQueue requestQueue;
-    String insertUrl = "http://192.168.1.65/insert_test.php";//"http://192.168.1.65/insert.php";
+    String insertUrl = "http://192.168.1.81:8080//insert.php";//"http://192.168.1.65/insert.php";
 
 
     //boh
@@ -117,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         this.checkWifi();
         this.checkGPS();
 //wifi values updating
-        String ssid = wifi.getConnectionInfo().getSSID();
+        String ssid = wifi.getConnectionInfo().getSSID().toString();
         String ip = Formatter.formatIpAddress(wifi.getConnectionInfo().getIpAddress());
         int speed = wifi.getConnectionInfo().getLinkSpeed();
         int rssi = wifi.getConnectionInfo().getRssi();
@@ -563,6 +565,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         setContentView(R.layout.activity_main);
 
         save = (Button) findViewById(R.id.buttonSave);
+        final TextView ssid = (TextView) findViewById(R.id.SSID_value);
+        final TextView gateway = (TextView) findViewById(R.id.gateway_value);
+        final TextView macAp = (TextView) findViewById(R.id.apMAC_value);
+        final TextView speed = (TextView) findViewById(R.id.speed_value);
+        final TextView macUser = (TextView) findViewById(R.id.MAC_value);
+        final TextView lat = (TextView) findViewById(R.id.latitude_value);
+        final TextView longitude = (TextView) findViewById(R.id.longitude_value);
+        final TextView accuracy = (TextView) findViewById(R.id.accuracy_value);
+        final TextView phoneType = (TextView) findViewById(R.id.device_value);
+        final TextView distance = (TextView) findViewById(R.id.distance_value);
+        final TextView satInView = (TextView) findViewById(R.id.siv_value);
+        final TextView satInUse = (TextView) findViewById(R.id.siu_value);
+        final TextView rssi = (TextView) findViewById(R.id.rssi_value);
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
@@ -584,10 +599,23 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
+                        String ssidValue = ssid.getText().toString();
+                        //add this to remove the ""
+                        ssidValue = ssidValue.replace("\"","");
                         Map<String, String> parameters = new HashMap<String, String>();
-                        parameters.put("id", "10");
-                        parameters.put("name", "test");
-                        parameters.put("quantity", "300");
+                        parameters.put("SSID", ssidValue);
+                        parameters.put("ip", gateway.getText().toString());
+                        parameters.put("MAC", macAp.getText().toString());
+                        parameters.put("speedInternet", speed.getText().toString());
+                        parameters.put("phone_mac", macUser.getText().toString());
+                        parameters.put("latitude", lat.getText().toString());
+                        parameters.put("longitude", longitude.getText().toString());
+                        parameters.put("accuracy", accuracy.getText().toString());
+                        parameters.put("phone_type", phoneType.getText().toString());
+                        parameters.put("distance", distance.getText().toString());
+                        parameters.put("satellite_in_view", satInView.getText().toString());
+                        parameters.put("satellite_in_use", satInUse.getText().toString());
+                        parameters.put("RSSI", rssi.getText().toString());
 
                         return parameters;
                     }
