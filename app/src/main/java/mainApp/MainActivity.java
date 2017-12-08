@@ -610,12 +610,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         parameters.put("phone_mac", macUser.getText().toString());
                         parameters.put("latitude", lat.getText().toString());
                         parameters.put("longitude", longitude.getText().toString());
-                        parameters.put("accuracy", accuracy.getText().toString());
+                        parameters.put("gps_accuracy", accuracy.getText().toString());
                         parameters.put("phone_type", phoneType.getText().toString());
                         parameters.put("distance", distance.getText().toString());
                         parameters.put("satellite_in_view", satInView.getText().toString());
                         parameters.put("satellite_in_use", satInUse.getText().toString());
                         parameters.put("RSSI", rssi.getText().toString());
+                        //change it
+                        parameters.put("allrooms_id", "12");
 
                         return parameters;
                     }
