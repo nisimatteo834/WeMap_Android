@@ -617,7 +617,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         parameters.put("satellite_in_use", satInUse.getText().toString());
                         parameters.put("RSSI", rssi.getText().toString());
                         //change it
-                        parameters.put("allrooms_id", "12");
+                        parameters.put("allrooms_id", "370");
 
                         return parameters;
                     }
