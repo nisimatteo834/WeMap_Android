@@ -85,11 +85,22 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+
         this.initLocationService(MainActivity.this);
         this.updateValues();
         this.insertMethod();
-//        new SpeedTestTask().execute();
-//        System.out.println("Prova" + SpeedTestTask.bitrate);
+
 
     }
 
@@ -189,11 +200,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         TextView accuracy_tv = (TextView) findViewById(R.id.accuracy_value);
         accuracy_tv.setText(String.valueOf(accuracy));
 
-        TextView siv = (TextView) findViewById(R.id.siv_value);
-        siv.setText(String.valueOf(this.getSatsInView(getApplicationContext())));
-
-        TextView siu = (TextView) findViewById(R.id.siu_value);
-        siu.setText(String.valueOf(this.getSatsInUse(getApplicationContext())));
+//        TextView siv = (TextView) findViewById(R.id.siv_value);
+//        siv.setText(String.valueOf(this.getSatsInView(getApplicationContext())));
+//
+//        TextView siu = (TextView) findViewById(R.id.siu_value);
+//        siu.setText(String.valueOf(this.getSatsInUse(getApplicationContext())));
 
 
     }
@@ -262,25 +273,28 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             // Get GPS and network status
             this.isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            if (forceNetwork) isGPSEnabled = false;
+            //if (forceNetwork) isGPSEnabled = false;
 
             if (isGPSEnabled) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
                 if (locationManager != null) {
                     mGpsStatus = locationManager.getGpsStatus(mGpsStatus);
-                    Iterable<GpsSatellite> satellites = mGpsStatus.getSatellites();
+                    Iterator<GpsSatellite> satellites = mGpsStatus.getSatellites().iterator();
                     int iTempCountInView = 0;
                     int iTempCountInUse = 0;
-                    if (satellites != null) {
-                        for (GpsSatellite gpsSatellite : satellites) {
-                            iTempCountInView++;
-                            if (gpsSatellite.usedInFix()) {
-                                iTempCountInUse++;
-                            }
-                        }
-                        return iTempCountInView;
-                    }
+//                    if (satellites != null) {
+//                        for (GpsSatellite gpsSatellite : satellites) {
+//                            iTempCountInView++;
+//                            if (gpsSatellite.usedInFix()) {
+//                                iTempCountInUse++;
+//                            }
+//                        }
+//                        return iTempCountInView;
+//                    }
+                    while (satellites.hasNext())
+                        System.out.println("ciao");
+
 
                     return 0;
 
@@ -575,8 +589,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         final TextView accuracy = (TextView) findViewById(R.id.accuracy_value);
         final TextView phoneType = (TextView) findViewById(R.id.device_value);
         final TextView distance = (TextView) findViewById(R.id.distance_value);
-        final TextView satInView = (TextView) findViewById(R.id.siv_value);
-        final TextView satInUse = (TextView) findViewById(R.id.siu_value);
+//        final TextView satInView = (TextView) findViewById(R.id.siv_value);
+//        final TextView satInUse = (TextView) findViewById(R.id.siu_value);
         final TextView rssi = (TextView) findViewById(R.id.rssi_value);
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -613,8 +627,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         parameters.put("gps_accuracy", accuracy.getText().toString());
                         parameters.put("phone_type", phoneType.getText().toString());
                         parameters.put("distance", distance.getText().toString());
-                        parameters.put("satellite_in_view", satInView.getText().toString());
-                        parameters.put("satellite_in_use", satInUse.getText().toString());
+//                        parameters.put("satellite_in_view", satInView.getText().toString());
+//                        parameters.put("satellite_in_use", satInUse.getText().toString());
                         parameters.put("RSSI", rssi.getText().toString());
                         //change it
                         parameters.put("allrooms_id", "370");
