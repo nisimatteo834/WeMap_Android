@@ -223,7 +223,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
-       <!--
+        <!--
         <TableRow
         android:id="@+id/siv"
         android:layout_width="match_parent"
@@ -261,15 +261,28 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <Button
                 android:id="@+id/buttonSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Save"
+                tools:ignore="MissingConstraints"
                 tools:layout_editor_absoluteX="7dp"
-                tools:layout_editor_absoluteY="4dp"
-                tools:ignore="MissingConstraints" />
+                tools:layout_editor_absoluteY="4dp" />
 
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/buttonAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="7dp"
+                tools:layout_editor_absoluteY="4dp" />
 
         </TableRow>
 

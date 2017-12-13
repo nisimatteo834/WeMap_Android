@@ -11,8 +11,9 @@
     <string name="ip">IP</string>
     <string name="gateway">Gateway</string>
     <string name="mac">MAC</string>
-    <string name="rssi">RSSI</string>ù
+    <string name="rssi">RSSI</string>
     <string name="speed">Speed</string>
+    <string name="general">Insert one of the following</string>
 
 
 </resources>

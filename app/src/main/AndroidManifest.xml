@@ -38,15 +38,22 @@
         </activity>
 
         <activity
-            android:name=".TestActivity"
+            android:name=".InstitutionActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN_NAVID" />
+                <action android:name="android.intent.action.INSTITUTION" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".LocationActivity"/>
+        <activity android:name=".BuildingActivity"/>
+        <activity android:name=".InOutCorrActivity"/>
+        <activity android:name=".RoomNameActivity"/>
+
+
 
 
         <activity

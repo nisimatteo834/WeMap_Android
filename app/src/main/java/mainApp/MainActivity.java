@@ -15,6 +15,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -96,10 +97,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             return;
         }
 
-
+        Button add = (Button) findViewById(R.id.buttonAdd);
+        add.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this,InstitutionActivity.class);
+                startActivity(myIntent);
+            }
+        });
         this.initLocationService(MainActivity.this);
         this.updateValues();
-        this.insertMethod();
+        //this.insertMethod();
 
 
     }
