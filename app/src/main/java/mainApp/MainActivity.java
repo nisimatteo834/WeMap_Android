@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private static final int MIN_RSSI = -100;
     private static final int MAX_RSSI = -55;
     private GpsStatus mGpsStatus = null;
+    public static Map<String, String> parameters = new HashMap<String, String>();
+
 
     //added by Navid
     Button save;
@@ -100,6 +102,41 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Button add = (Button) findViewById(R.id.buttonAdd);
         add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+                final TextView ssid = (TextView) findViewById(R.id.SSID_value);
+                final TextView gateway = (TextView) findViewById(R.id.gateway_value);
+                final TextView macAp = (TextView) findViewById(R.id.apMAC_value);
+                final TextView speed = (TextView) findViewById(R.id.speed_value);
+                final TextView macUser = (TextView) findViewById(R.id.MAC_value);
+                final TextView lat = (TextView) findViewById(R.id.latitude_value);
+                final TextView longitude = (TextView) findViewById(R.id.longitude_value);
+                final TextView accuracy = (TextView) findViewById(R.id.accuracy_value);
+                final TextView phoneType = (TextView) findViewById(R.id.device_value);
+                final TextView distance = (TextView) findViewById(R.id.distance_value);
+//        final TextView satInView = (TextView) findViewById(R.id.siv_value);
+//        final TextView satInUse = (TextView) findViewById(R.id.siu_value);
+                final TextView rssi = (TextView) findViewById(R.id.rssi_value);
+
+                String ssidValue = ssid.getText().toString();
+                //add this to remove the ""
+                ssidValue = ssidValue.replace("\"","");
+
+                parameters.put("SSID", ssidValue);
+                parameters.put("ip", gateway.getText().toString());
+                parameters.put("MAC", macAp.getText().toString());
+                parameters.put("speedInternet", speed.getText().toString());
+                parameters.put("phone_mac", macUser.getText().toString());
+                parameters.put("latitude", lat.getText().toString());
+                parameters.put("longitude", longitude.getText().toString());
+                parameters.put("gps_accuracy", accuracy.getText().toString());
+                parameters.put("phone_type", phoneType.getText().toString());
+                parameters.put("distance", distance.getText().toString());
+//                        parameters.put("satellite_in_view", satInView.getText().toString());
+//                        parameters.put("satellite_in_use", satInUse.getText().toString());
+                parameters.put("RSSI", rssi.getText().toString());
+                //change it
+                parameters.put("allrooms_id", "370");
+
                 Intent myIntent = new Intent(MainActivity.this,InstitutionActivity.class);
                 startActivity(myIntent);
             }
@@ -581,72 +618,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     //@Override
     //protected void onCreate(Bundle savedInstanceState) {
 
-    public void insertMethod(){
-        //super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        save = (Button) findViewById(R.id.buttonSave);
-        final TextView ssid = (TextView) findViewById(R.id.SSID_value);
-        final TextView gateway = (TextView) findViewById(R.id.gateway_value);
-        final TextView macAp = (TextView) findViewById(R.id.apMAC_value);
-        final TextView speed = (TextView) findViewById(R.id.speed_value);
-        final TextView macUser = (TextView) findViewById(R.id.MAC_value);
-        final TextView lat = (TextView) findViewById(R.id.latitude_value);
-        final TextView longitude = (TextView) findViewById(R.id.longitude_value);
-        final TextView accuracy = (TextView) findViewById(R.id.accuracy_value);
-        final TextView phoneType = (TextView) findViewById(R.id.device_value);
-        final TextView distance = (TextView) findViewById(R.id.distance_value);
-//        final TextView satInView = (TextView) findViewById(R.id.siv_value);
-//        final TextView satInUse = (TextView) findViewById(R.id.siu_value);
-        final TextView rssi = (TextView) findViewById(R.id.rssi_value);
-
-        requestQueue = Volley.newRequestQueue(getApplicationContext());
-
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                StringRequest request = new StringRequest(Request.Method.POST, insertUrl, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        System.out.println(response.toString());
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }) {
-
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        String ssidValue = ssid.getText().toString();
-                        //add this to remove the ""
-                        ssidValue = ssidValue.replace("\"","");
-                        Map<String, String> parameters = new HashMap<String, String>();
-                        parameters.put("SSID", ssidValue);
-                        parameters.put("ip", gateway.getText().toString());
-                        parameters.put("MAC", macAp.getText().toString());
-                        parameters.put("speedInternet", speed.getText().toString());
-                        parameters.put("phone_mac", macUser.getText().toString());
-                        parameters.put("latitude", lat.getText().toString());
-                        parameters.put("longitude", longitude.getText().toString());
-                        parameters.put("gps_accuracy", accuracy.getText().toString());
-                        parameters.put("phone_type", phoneType.getText().toString());
-                        parameters.put("distance", distance.getText().toString());
-//                        parameters.put("satellite_in_view", satInView.getText().toString());
-//                        parameters.put("satellite_in_use", satInUse.getText().toString());
-                        parameters.put("RSSI", rssi.getText().toString());
-                        //change it
-                        parameters.put("allrooms_id", "370");
-
-                        return parameters;
-                    }
-                };
-                requestQueue.add(request);
-            }
-        });
-    }
 
 }
 

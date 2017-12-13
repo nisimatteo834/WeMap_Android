@@ -52,6 +52,8 @@
         <activity android:name=".BuildingActivity"/>
         <activity android:name=".InOutCorrActivity"/>
         <activity android:name=".RoomNameActivity"/>
+        <activity android:name=".SaveActivity"/>
+
 
 
 
