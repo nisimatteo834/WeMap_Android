@@ -49,7 +49,7 @@ import android.widget.Button;
 import com.novoda.merlin.Merlin;
 
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, LocationListener {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     LocationManager locationManager = null;
     WifiManager wifi = null;
     public Location location;
@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
             }
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, locationListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
@@ -171,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     @Override
     protected void onPause() {
-        locationManager.removeUpdates(this);
+        locationManager.removeUpdates(locationListener);
         super.onPause();
 
 
@@ -206,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         }
         this.updateValues();
-        //this.initLocationService(getApplicationContext());
+        this.initLocationService(getApplicationContext(),locationListener);
 
 
     }
@@ -289,34 +288,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     }
 
-    private void updateCoordinates(Location location) {
-
-        Double lon = location.getLongitude();
-        Double lat = location.getLatitude();
-        Float accuracy = location.getAccuracy();
-
-        TextView lat_tv = (TextView) findViewById(R.id.latitude_value);
-        lat_tv.setText(String.valueOf(lat));
-
-        TextView lon_tv = (TextView) findViewById(R.id.longitude_value);
-        lon_tv.setText(String.valueOf(lon));
-
-        TextView accuracy_tv = (TextView) findViewById(R.id.accuracy_value);
-        accuracy_tv.setText(String.valueOf(accuracy));
-
-//        TextView siv = (TextView) findViewById(R.id.siv_value);
-//        siv.setText(String.valueOf(this.getSatsInView(getApplicationContext())));
-//
-//        TextView siu = (TextView) findViewById(R.id.siu_value);
-//        siu.setText(String.valueOf(this.getSatsInUse(getApplicationContext())));
-
-
-    }
 
     private String getFrequencyAndLevel() {
         Iterator<ScanResult> iterator = wifi.getScanResults().iterator();
         int frequency = 0;
-
 
         List<AccessPoint> aps = new ArrayList();
         while (iterator.hasNext()) {
@@ -351,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         return accesspoints;
     }
 
-
     private void initLocationService(Context context,LocationListener listener) {
 
 
@@ -375,7 +349,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
 
         try {
-            this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Location locationNetwork = null;
             Location locationGPS = null;
 
@@ -416,7 +389,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     location = locationNetwork;
                 }
 
-                this.updateCoordinates(location);
+                GpsData.updateCoordinates(location);
+
 
             } else if (locationGPS != null || locationNetwork != null) {
                 if (locationGPS != null) {
@@ -425,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     location = locationNetwork;
                 }
 
-                this.updateCoordinates(location);
+                GpsData.updateCoordinates(location);
 
             } else {
                 View mLayout = findViewById(R.id.main_activity);
@@ -501,39 +475,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         wifi_diag = builder.create();
         wifi_diag.show();
     }
-//
-//    private void showAlertGPS() {
-//
-//        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//        dialog.setTitle("Enable Location").setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " + "use this app").setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-//                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                startActivity(myIntent);
-//            }
-//        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-//            }
-//        });
-//        dialog.show();
-//    }
-//
-//    private void showAlertWIFI() {
-//        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//        dialog.setTitle("Enable Wifi").setMessage("Your Wi-Fi is not Enabled.\nPlease Enable Wi-Fi to " + "use this app").setPositiveButton("Wi-Fi Settings", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-//                Intent myIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-//                startActivity(myIntent);
-//            }
-//        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-//            }
-//        });
-//        dialog.show();
-//    }
 
     private void checkWifi() {
 
@@ -563,34 +504,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-        this.updateCoordinates(location);
-        this.updateValues();
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        View mLayout = findViewById(R.id.main_activity);
-        Snackbar.make(mLayout, "Provider has been enabled.", Snackbar.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        View mLayout = findViewById(R.id.main_activity);
-        Snackbar.make(mLayout, "Provider has been disabled.", Snackbar.LENGTH_SHORT).show();
-
-    }
-
-
     public BigDecimal calculateDistance(int frequency, int level) {
         BigDecimal bd = new BigDecimal(Double.toString(Math.pow(10.0, (DISTANCE_MHZ_M - (20 * Math.log10(frequency)) + Math.abs(level)) / 20.0)));
         bd.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -617,91 +530,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         }
     }
-
-
-//    private void addGnssMeasurementListener(){
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            mGnssMeasurementListener = new GnssMeasurementsEvent.Callback() {
-//                @RequiresApi(api = Build.VERSION_CODES.N)
-//                @Override
-//                public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
-//                    Collection<GnssMeasurement> measurements = eventArgs.getMeasurements();
-//                    String s = "";
-//                    for (GnssMeasurement m : measurements){
-//                        String constellation = "None";
-//                        switch (m.getConstellationType())
-//                        {
-//                            case GnssStatus.CONSTELLATION_BEIDOU:
-//                            {
-//                                constellation = "BDU";
-//                                break;}
-//                            case GnssStatus.CONSTELLATION_GALILEO:{
-//                                constellation = "GAL";
-//                                break;
-//                            }
-//                            case GnssStatus.CONSTELLATION_GLONASS:{
-//                                constellation = "GLN";
-//                                break;
-//                            }
-//                            case GnssStatus.CONSTELLATION_GPS:{
-//                                constellation="GPS";
-//                                break;
-//                            }
-//
-//                            case GnssStatus.CONSTELLATION_QZSS:{
-//                                constellation="QZSS";
-//                                break;
-//                            }
-//                            case GnssStatus.CONSTELLATION_SBAS:{
-//                                constellation="SBAS";
-//                                break;
-//                            }
-//                            case GnssStatus.CONSTELLATION_UNKNOWN:{
-//                                constellation="UNK";
-//                                break;
-//                            }
-//
-//                        }
-//
-//
-//                        s += "sat:" + constellation+Integer.toString(m.getSvid()) + ' ';
-//                        s += "pdr:"+Double.toString(m.getPseudorangeRateMetersPerSecond()) + ' ';
-//                        if (m.hasSnrInDb()){
-//                            s +=  "snr:"+Double.toString(m.getSnrInDb()) + ' ';
-//                        }
-//
-//                        if (m.hasCarrierCycles()){
-//                            s+= "cyc:" + Long.toString(m.getCarrierCycles()) + ' ';
-//                            if (m.hasCarrierFrequencyHz()){
-//                                s+="freq:" + Float.toString(m.getCarrierFrequencyHz());
-//                            }
-//                        }
-//
-//                        s+= "Cn0:" + Double.toString(m.getCn0DbHz())+ ' ';
-//
-//                        s+='\n';
-//
-//
-//                    }
-//
-//                    TextView pdr = (TextView) findViewById(R.id.pdr_value);
-//                    pdr.setText(s);
-//
-////                    System.out.println("MEASUREMENT RECEIVED");
-//                     super.onGnssMeasurementsReceived(eventArgs);
-//                }
-//
-//                @Override
-//                public void onStatusChanged(int status) {
-//                    super.onStatusChanged(status);
-//                }
-//            };
-//        }
-//
-//        else {
-//            System.out.print("Devices not enabled for GNSS measurements");
-//        }
-//    }
 
 
 }

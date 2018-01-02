@@ -31,7 +31,7 @@ public class GpsData implements LocationListener {
     boolean canGetLocation = false; // flag for either cellular or satellite status
 
     private GpsStatus mGpsStatus;
-    private final Context mContext;
+    private static Context mContext;
     protected LocationManager locationManager;
 
     Location locationNetwork=null;
@@ -52,8 +52,7 @@ public class GpsData implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        TextView lat = (TextView) ((Activity)mContext).findViewById(R.id.latitude_value);
-        lat.setText(String.valueOf(location.getLatitude()));
+        this.updateCoordinates(location);
     }
 
     @Override
@@ -72,7 +71,29 @@ public class GpsData implements LocationListener {
     }
 
 
+    public static void updateCoordinates(Location location) {
 
+        Double lon = location.getLongitude();
+        Double lat = location.getLatitude();
+        Float accuracy = location.getAccuracy();
+
+        TextView lat_tv = (TextView)((Activity)mContext).findViewById(R.id.latitude_value);
+        lat_tv.setText(String.valueOf(lat));
+
+        TextView lon_tv = (TextView)((Activity)mContext).findViewById(R.id.longitude_value);
+        lon_tv.setText(String.valueOf(lon));
+
+        TextView accuracy_tv = (TextView)((Activity)mContext).findViewById(R.id.accuracy_value);
+        accuracy_tv.setText(String.valueOf(accuracy));
+
+//        TextView siv = (TextView) findViewById(R.id.siv_value);
+//        siv.setText(String.valueOf(this.getSatsInView(getApplicationContext())));
+//
+//        TextView siu = (TextView) findViewById(R.id.siu_value);
+//        siu.setText(String.valueOf(this.getSatsInUse(getApplicationContext())));
+
+
+    }
 
 
 
