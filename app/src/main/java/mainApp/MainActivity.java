@@ -32,6 +32,7 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.widget.TextView;
 import android.support.annotation.RequiresApi;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,18 +40,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 // added by Navid
 
 import android.widget.Button;
 
 
 import com.novoda.merlin.Merlin;
-import com.novoda.merlin.registerable.connection.Connectable;
-import com.novoda.merlin.registerable.disconnection.Disconnectable;
-
-import org.w3c.dom.Text;
-
-import static android.os.Build.VERSION.SDK;
 
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, LocationListener {
@@ -65,15 +61,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private static final int MIN_RSSI = -100;
     private static final int MAX_RSSI = -55;
     public GpsStatus mGpsStatus = null;
-    public GnssStatus mGnssStatus = null;
-    GnssMeasurementsEvent.Callback mGnssMeasurementListener;
+//    public GnssStatus mGnssStatus = null;
+//    GnssMeasurementsEvent.Callback mGnssMeasurementListener;
     public static Map<String, String> parameters = new HashMap<String, String>();
     public Merlin merlin = null;
     static final int WIFI_ACTIVE = 1;
     public AlertDialog wifi_diag;
     public AlertDialog gps_diag;
-    GnssStatus.Callback mGnssStatusCallback;
+//    GnssStatus.Callback mGnssStatusCallback;
     public Integer prova = -1;
+    public LocationListener locationListener = null;
 
 
     //boh
@@ -87,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     //private static LocationService instance = null;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,66 +93,30 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         this.checkGPS();
         setContentView(R.layout.activity_main);
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new GpsData(MainActivity.this);
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            }
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, locationListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mGnssStatusCallback = new GnssStatus.Callback() {
-                @Override
-                public void onStarted() {
-                    super.onStarted();
-                    System.out.println("Son started");
-                }
 
-                @Override
-                public void onStopped() {
-                    super.onStopped();
-                    System.out.println("Son stopped");
-                }
-
-                @Override
-                public void onFirstFix(int ttffMillis) {
-                    super.onFirstFix(ttffMillis);
-                    prova = ttffMillis;
-
-                }
-
-                @Override
-                public void onSatelliteStatusChanged(GnssStatus status) {
-
-                    mGnssStatus = status;
-                    super.onSatelliteStatusChanged(status);
-                    System.out.println("SATELLITES CHANGED");
-                }
-            };
-            this.addGnssMeasurementListener();
-
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                } else {
-
-                    // No explanation needed, we can request the permission.
-
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                }
-            }
-            locationManager.registerGnssStatusCallback(mGnssStatusCallback);
-            locationManager.registerGnssMeasurementsCallback(mGnssMeasurementListener);
-
-            System.out.println("TEXT");
+        GnssData gnss = new GnssData(MainActivity.this);
+        locationManager.registerGnssStatusCallback(gnss.mGnssStatusCallback);
+        locationManager.registerGnssMeasurementsCallback(gnss.mGnssMeasurementListener);
         }
 
-//        if (this.isOnline()) {
-//            TextView connection = (TextView) findViewById(R.id.connection);
-//            connection.setText("You are CONNECTED");
-//            // Do something you haz internet!
-//        } else {
-//            TextView connection = (TextView) findViewById(R.id.connection);
-//            connection.setText("You are NOT CONNECTED");
-//
-//        }
+        this.initLocationService(MainActivity.this,locationListener);
 
         wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
@@ -204,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 startActivity(myIntent);
             }
         });
-        this.initLocationService(MainActivity.this);
         this.updateValues();
 
 
@@ -248,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         }
         this.updateValues();
-        this.initLocationService(getApplicationContext());
+        //this.initLocationService(getApplicationContext());
 
 
     }
@@ -263,6 +221,23 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         String ssid = wifi.getConnectionInfo().getSSID().toString();
         String ip = Formatter.formatIpAddress(wifi.getConnectionInfo().getIpAddress());
         int speed = wifi.getConnectionInfo().getLinkSpeed();
+
+        String result = "";
+//        while (result.equals("")) {
+            try {
+                result = new SpeedTestTask(MainActivity.this).execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+//        }
+
+        System.out.println("Result: "+ result);
+
+        TextView st = (TextView) findViewById(R.id.s_test);
+        st.setText(result + " Mbps");
+
         int rssi = wifi.getConnectionInfo().getRssi();
         String gw = Formatter.formatIpAddress(wifi.getDhcpInfo().gateway);
 
@@ -376,129 +351,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         return accesspoints;
     }
 
-    private int getSatsInView(Context context) {
 
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-            }
-        }
-
-        try {
-            this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            Location locationNetwork = null;
-            Location locationGPS = null;
-
-            // Get GPS and network status
-            this.isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            //if (forceNetwork) isGPSEnabled = false;
-
-            if (isGPSEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-
-                if (locationManager != null) {
-                    mGpsStatus = locationManager.getGpsStatus(mGpsStatus);
-                    Iterator<GpsSatellite> satellites = mGpsStatus.getSatellites().iterator();
-                    int iTempCountInView = 0;
-                    int iTempCountInUse = 0;
-//                    if (satellites != null) {
-//                        for (GpsSatellite gpsSatellite : satellites) {
-//                            iTempCountInView++;
-//                            if (gpsSatellite.usedInFix()) {
-//                                iTempCountInUse++;
-//                            }
-//                        }
-//                        return iTempCountInView;
-//                    }
-                    while (satellites.hasNext())
-                        System.out.println("ciao");
-
-
-                    return 0;
-
-                }
-            }
-        } catch (Exception ex) {
-            View mLayout = findViewById(R.id.main_activity);
-            Snackbar.make(mLayout, ex.getMessage(), Snackbar.LENGTH_SHORT).show();
-
-            System.out.println("Error getting sats in view: " + ex.getMessage());
-
-        }
-        return 0;
-    }
-
-    private int getSatsInUse(Context context) {
-
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-            }
-        }
-
-        try {
-            this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            Location locationNetwork = null;
-            Location locationGPS = null;
-
-            // Get GPS and network status
-            this.isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            if (forceNetwork) isGPSEnabled = false;
-
-            if (isGPSEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-
-                if (locationManager != null) {
-                    mGpsStatus = locationManager.getGpsStatus(mGpsStatus);
-                    Iterable<GpsSatellite> satellites = mGpsStatus.getSatellites();
-                    int iTempCountInView = 0;
-                    int iTempCountInUse = 0;
-                    if (satellites != null) {
-                        for (GpsSatellite gpsSatellite : satellites) {
-                            iTempCountInView++;
-                            if (gpsSatellite.usedInFix()) {
-                                iTempCountInUse++;
-                            }
-                        }
-                        return iTempCountInUse;
-                    }
-
-                    return 0;
-
-                }
-            }
-        } catch (Exception ex) {
-            View mLayout = findViewById(R.id.main_activity);
-            Snackbar.make(mLayout, ex.getMessage(), Snackbar.LENGTH_SHORT).show();
-
-            System.out.println("Error getting sats in use: " + ex.getMessage());
-
-        }
-        return 0;
-    }
-
-
-    private void initLocationService(Context context) {
+    private void initLocationService(Context context,LocationListener listener) {
 
 
         if (android.os.Build.VERSION.SDK_INT >=23) {
@@ -538,14 +392,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 this.locationServiceAvailable = true;
 
                 if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
                     if (locationManager != null) {
                         locationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     }
                 }//end if
 
                 if (isGPSEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
 
                     if (locationManager != null) {
                         locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -765,89 +619,89 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
 
-    private void addGnssMeasurementListener(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mGnssMeasurementListener = new GnssMeasurementsEvent.Callback() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
-                    Collection<GnssMeasurement> measurements = eventArgs.getMeasurements();
-                    String s = "";
-                    for (GnssMeasurement m : measurements){
-                        String constellation = "None";
-                        switch (m.getConstellationType())
-                        {
-                            case GnssStatus.CONSTELLATION_BEIDOU:
-                            {
-                                constellation = "BDU";
-                                break;}
-                            case GnssStatus.CONSTELLATION_GALILEO:{
-                                constellation = "GAL";
-                                break;
-                            }
-                            case GnssStatus.CONSTELLATION_GLONASS:{
-                                constellation = "GLN";
-                                break;
-                            }
-                            case GnssStatus.CONSTELLATION_GPS:{
-                                constellation="GPS";
-                                break;
-                            }
-
-                            case GnssStatus.CONSTELLATION_QZSS:{
-                                constellation="QZSS";
-                                break;
-                            }
-                            case GnssStatus.CONSTELLATION_SBAS:{
-                                constellation="SBAS";
-                                break;
-                            }
-                            case GnssStatus.CONSTELLATION_UNKNOWN:{
-                                constellation="UNK";
-                                break;
-                            }
-
-                        }
-
-
-                        s += "sat:" + constellation+Integer.toString(m.getSvid()) + ' ';
-                        s += "pdr:"+Double.toString(m.getPseudorangeRateMetersPerSecond()) + ' ';
-                        if (m.hasSnrInDb()){
-                            s +=  "snr:"+Double.toString(m.getSnrInDb()) + ' ';
-                        }
-
-                        if (m.hasCarrierCycles()){
-                            s+= "cyc:" + Long.toString(m.getCarrierCycles()) + ' ';
-                            if (m.hasCarrierFrequencyHz()){
-                                s+="freq:" + Float.toString(m.getCarrierFrequencyHz());
-                            }
-                        }
-
-                        s+= "Cn0:" + Double.toString(m.getCn0DbHz())+ ' ';
-
-                        s+='\n';
-
-
-                    }
-
-                    TextView pdr = (TextView) findViewById(R.id.pdr_value);
-                    pdr.setText(s);
-
-                    System.out.println("MEASUREMENT RECEIVED");
-                    super.onGnssMeasurementsReceived(eventArgs);
-                }
-
-                @Override
-                public void onStatusChanged(int status) {
-                    super.onStatusChanged(status);
-                }
-            };
-        }
-
-        else {
-            System.out.print("Devices not enabled for GNSS measurements");
-        }
-    }
+//    private void addGnssMeasurementListener(){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            mGnssMeasurementListener = new GnssMeasurementsEvent.Callback() {
+//                @RequiresApi(api = Build.VERSION_CODES.N)
+//                @Override
+//                public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
+//                    Collection<GnssMeasurement> measurements = eventArgs.getMeasurements();
+//                    String s = "";
+//                    for (GnssMeasurement m : measurements){
+//                        String constellation = "None";
+//                        switch (m.getConstellationType())
+//                        {
+//                            case GnssStatus.CONSTELLATION_BEIDOU:
+//                            {
+//                                constellation = "BDU";
+//                                break;}
+//                            case GnssStatus.CONSTELLATION_GALILEO:{
+//                                constellation = "GAL";
+//                                break;
+//                            }
+//                            case GnssStatus.CONSTELLATION_GLONASS:{
+//                                constellation = "GLN";
+//                                break;
+//                            }
+//                            case GnssStatus.CONSTELLATION_GPS:{
+//                                constellation="GPS";
+//                                break;
+//                            }
+//
+//                            case GnssStatus.CONSTELLATION_QZSS:{
+//                                constellation="QZSS";
+//                                break;
+//                            }
+//                            case GnssStatus.CONSTELLATION_SBAS:{
+//                                constellation="SBAS";
+//                                break;
+//                            }
+//                            case GnssStatus.CONSTELLATION_UNKNOWN:{
+//                                constellation="UNK";
+//                                break;
+//                            }
+//
+//                        }
+//
+//
+//                        s += "sat:" + constellation+Integer.toString(m.getSvid()) + ' ';
+//                        s += "pdr:"+Double.toString(m.getPseudorangeRateMetersPerSecond()) + ' ';
+//                        if (m.hasSnrInDb()){
+//                            s +=  "snr:"+Double.toString(m.getSnrInDb()) + ' ';
+//                        }
+//
+//                        if (m.hasCarrierCycles()){
+//                            s+= "cyc:" + Long.toString(m.getCarrierCycles()) + ' ';
+//                            if (m.hasCarrierFrequencyHz()){
+//                                s+="freq:" + Float.toString(m.getCarrierFrequencyHz());
+//                            }
+//                        }
+//
+//                        s+= "Cn0:" + Double.toString(m.getCn0DbHz())+ ' ';
+//
+//                        s+='\n';
+//
+//
+//                    }
+//
+//                    TextView pdr = (TextView) findViewById(R.id.pdr_value);
+//                    pdr.setText(s);
+//
+////                    System.out.println("MEASUREMENT RECEIVED");
+//                     super.onGnssMeasurementsReceived(eventArgs);
+//                }
+//
+//                @Override
+//                public void onStatusChanged(int status) {
+//                    super.onStatusChanged(status);
+//                }
+//            };
+//        }
+//
+//        else {
+//            System.out.print("Devices not enabled for GNSS measurements");
+//        }
+//    }
 
 
 }

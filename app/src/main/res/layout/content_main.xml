@@ -101,6 +101,23 @@
         </TableRow>
 
         <TableRow
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="S_TEST" />
+
+            <TextView
+                android:id="@+id/s_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+
+        <TableRow
             android:id="@+id/rssi"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
