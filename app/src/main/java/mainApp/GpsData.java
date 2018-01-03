@@ -30,6 +30,7 @@ public class GpsData implements LocationListener {
     boolean isNetworkEnabled = false; // flag for cellular network status
     boolean canGetLocation = false; // flag for either cellular or satellite status
 
+
     private GpsStatus mGpsStatus;
     private static Context mContext;
     protected LocationManager locationManager;

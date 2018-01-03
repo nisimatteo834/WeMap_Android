@@ -33,7 +33,7 @@ public class GnssData {
 
     }
 
-    private void addGnssStatusCallBack()
+    public void addGnssStatusCallBack()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mGnssStatusCallback = new GnssStatus.Callback() {
@@ -63,7 +63,7 @@ public class GnssData {
 
         }
     }
-    private void addGnssMeasurementListener(){
+    public void addGnssMeasurementListener(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mGnssMeasurementListener = new GnssMeasurementsEvent.Callback() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -128,10 +128,13 @@ public class GnssData {
 
                     }
 
+                    Wifi wifi = new Wifi(mcontext);
+                    wifi.updateValues();
+
                     TextView pdr = (TextView) ((Activity)mcontext).findViewById(R.id.pdr_value);
                     pdr.setText(s);
 
-//                    System.out.println("MEASUREMENT RECEIVED");
+                    System.out.println("MEASUREMENT RECEIVED");
                      super.onGnssMeasurementsReceived(eventArgs);
                 }
 
