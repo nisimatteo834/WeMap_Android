@@ -1,6 +1,7 @@
 package mainApp;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 
 import java.math.BigDecimal;
@@ -11,9 +12,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.widget.TextView;
 
 public class Wifi {
@@ -38,7 +43,7 @@ public class Wifi {
         Integer speed = wifi.getConnectionInfo().getLinkSpeed();
 
         String result = "";
-        while (result.equals("")) {
+        //while (result.equals("")) {
         try {
             result = new SpeedTestTask(mContext).execute().get();
         } catch (InterruptedException e) {
@@ -46,7 +51,7 @@ public class Wifi {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        }
+        //}
 
         System.out.println("Result: "+ result);
 
@@ -179,4 +184,6 @@ public class Wifi {
         }
         return "";
     }
+
+
 }

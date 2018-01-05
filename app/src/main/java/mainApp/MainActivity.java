@@ -1,8 +1,8 @@
 package mainApp;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.location.GnssMeasurement;
 import android.location.GnssMeasurementsEvent;
 import android.location.GnssStatus;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,17 +23,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import android.widget.Button;
-
-import com.novoda.merlin.Merlin;
-
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     LocationManager locationManager = null;
@@ -44,9 +39,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public boolean isNetworkEnabled;
     public boolean locationServiceAvailable;
     int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 150;
-    public GpsStatus mGpsStatus = null;
     public static Map<String, String> parameters = new HashMap<String, String>();
-    public Merlin merlin = null;
     static final int WIFI_ACTIVE = 1;
     public AlertDialog wifi_diag;
     public AlertDialog gps_diag;
@@ -54,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public GnssStatus mGnssStatus = null;
     public GnssMeasurementsEvent.Callback mGnssMeasurementListener;
     public GnssStatus.Callback mGnssStatusCallback;
-
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 10 meters
 
     //The minimum time beetwen updates in milliseconds
@@ -74,8 +66,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         setContentView(R.layout.activity_main);
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new GpsData(MainActivity.this);
-
         wifi = new Wifi(MainActivity.this);
+        this.addGnssStatusCallBack();
+        this.addGnssMeasurementListener();
 
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -93,10 +86,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-            final GnssData gnss = new GnssData(MainActivity.this);
-
-            locationManager.registerGnssStatusCallback(gnss.mGnssStatusCallback);
-            locationManager.registerGnssMeasurementsCallback(gnss.mGnssMeasurementListener);
+            locationManager.registerGnssStatusCallback(mGnssStatusCallback);
+            locationManager.registerGnssMeasurementsCallback(mGnssMeasurementListener);
         }
 
         this.initLocationService(MainActivity.this, locationListener);
@@ -152,8 +143,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     protected void onPause() {
         locationManager.removeUpdates(locationListener);
         super.onPause();
-
-
         if (this.isOnline()) {
             TextView connection = (TextView) findViewById(R.id.connection);
             connection.setText("You are CONNECTED");
@@ -378,14 +367,144 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         if (requestCode == WIFI_ACTIVE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
                 wifi_diag.dismiss();
                 // Do something with the contact here (bigger example below)
-
             }
         }
     }
+
+
+    public void addGnssStatusCallBack()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mGnssStatusCallback = new GnssStatus.Callback() {
+                @Override
+                public void onStarted() {
+                    super.onStarted();
+                    System.out.println("Gnss started");
+                }
+
+                @Override
+                public void onStopped() {
+                    super.onStopped();
+                    System.out.println("Gnss stopped");
+                }
+
+                @Override
+                public void onFirstFix(int ttffMillis) {
+                    super.onFirstFix(ttffMillis);
+                }
+
+                @Override
+                public void onSatelliteStatusChanged(GnssStatus status) {
+                    mGnssStatus = status;
+                    super.onSatelliteStatusChanged(status);
+                }
+            };
+
+        }
+    }
+    public void addGnssMeasurementListener(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mGnssMeasurementListener = new GnssMeasurementsEvent.Callback() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
+                    final Collection<GnssMeasurement> measurements = eventArgs.getMeasurements();
+                    String s = "";
+                    for (GnssMeasurement m : measurements){
+                        String constellation = "None";
+                        switch (m.getConstellationType())
+                        {
+                            case GnssStatus.CONSTELLATION_BEIDOU:
+                            {
+                                constellation = "BDU";
+                                break;}
+                            case GnssStatus.CONSTELLATION_GALILEO:{
+                                constellation = "GAL";
+                                break;
+                            }
+                            case GnssStatus.CONSTELLATION_GLONASS:{
+                                constellation = "GLN";
+                                break;
+                            }
+                            case GnssStatus.CONSTELLATION_GPS:{
+                                constellation="GPS";
+                                break;
+                            }
+
+                            case GnssStatus.CONSTELLATION_QZSS:{
+                                constellation="QZSS";
+                                break;
+                            }
+                            case GnssStatus.CONSTELLATION_SBAS:{
+                                constellation="SBAS";
+                                break;
+                            }
+                            case GnssStatus.CONSTELLATION_UNKNOWN:{
+                                constellation="UNK";
+                                break;
+                            }
+
+                        }
+
+
+                        s += "sat:" + constellation+Integer.toString(m.getSvid()) + ' ';
+                        s += "pdr:"+Double.toString(m.getPseudorangeRateMetersPerSecond()) + ' ';
+                        if (m.hasSnrInDb()){
+                            s +=  "snr:"+Double.toString(m.getSnrInDb()) + ' ';
+                        }
+
+                        if (m.hasCarrierCycles()){
+                            s+= "cyc:" + Long.toString(m.getCarrierCycles()) + ' ';
+                            if (m.hasCarrierFrequencyHz()){
+                                s+="freq:" + Float.toString(m.getCarrierFrequencyHz());
+                            }
+                        }
+
+                        s+= "Cn0:" + Double.toString(m.getCn0DbHz())+ ' ';
+
+                        s+='\n';
+
+
+                    }
+
+
+
+                    final String s_final = s;
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("I'm here 123");
+                            TextView pdr = (TextView) findViewById(R.id.pdr_value);
+                            pdr.setText(s_final);
+                            TextView sat = (TextView) findViewById(R.id.siv_value);
+                            sat.setText(String.valueOf(measurements.size()));
+                            wifi.updateValues();
+
+                        }
+                    });
+
+                    System.out.println("MEASUREMENT RECEIVED");
+                    super.onGnssMeasurementsReceived(eventArgs);
+                }
+
+                @Override
+                public void onStatusChanged(int status) {
+                    super.onStatusChanged(status);
+                }
+            };
+        }
+
+        else {
+            System.out.print("Devices not enabled for GNSS measurements");
+        }
+    }
+
 }
+
+
 
 

@@ -36,8 +36,7 @@ public class SpeedTestTask extends AsyncTask<Void, Integer, String> {
     protected String doInBackground(Void... params) {
 
         SpeedTestSocket speedTestSocket = new SpeedTestSocket();
-        speedTestSocket.setDownloadSetupTime(4000);
-
+        speedTestSocket.setUploadSetupTime(4000);
         // add a listener to wait for speedtest completion and progress
         speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
 
@@ -68,7 +67,7 @@ public class SpeedTestTask extends AsyncTask<Void, Integer, String> {
         });
 
         //speedTestSocket.startFixedDownload("2.testdebit.info",80);
-        speedTestSocket.startDownload("http://test.talia.net/dl/10mb.pak");
+        speedTestSocket.startDownload("ftp://speedtest.tele2.net/20MB.zip");
 
         //speedTestSocket.startFixedDownload("ftp://speedtest.tele2.net/20MB.zip",10000);
 

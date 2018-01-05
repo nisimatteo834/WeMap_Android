@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Matteo on 04/12/2017.
@@ -30,22 +31,7 @@ public class GpsData implements LocationListener {
     boolean isNetworkEnabled = false; // flag for cellular network status
     boolean canGetLocation = false; // flag for either cellular or satellite status
 
-
-    private GpsStatus mGpsStatus;
     private static Context mContext;
-    protected LocationManager locationManager;
-
-    Location locationNetwork=null;
-    Location locationGPS = null;// location
-    double dLatitude, dAltitude, dLongitude, dAccuracy, dSpeed, dSats;
-    float fAccuracy, fSpeed;
-    long lSatTime;     // satellite time
-    String szSignalSource, szAltitude, szAccuracy, szSpeed;
-
-    public String szSatellitesInUse, szSatellitesInView;
-    public static String szSatTime;
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 0 meters
-    private static final long MIN_TIME_BW_UPDATES = 1000; //1 second
 
     public GpsData(Context context) {
         this.mContext = context;
@@ -63,12 +49,17 @@ public class GpsData implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
+        String text = "GPS enabled. Thank you!";
+        Toast toast = Toast.makeText(mContext,text,Toast.LENGTH_LONG);
+        toast.show();
 
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
+        String text = "Please, Enable your GPS!";
+        Toast toast = Toast.makeText(mContext,text,Toast.LENGTH_LONG);
+        toast.show();
     }
 
 
@@ -86,13 +77,6 @@ public class GpsData implements LocationListener {
 
         TextView accuracy_tv = (TextView)((Activity)mContext).findViewById(R.id.accuracy_value);
         accuracy_tv.setText(String.valueOf(accuracy));
-
-//        TextView siv = (TextView) findViewById(R.id.siv_value);
-//        siv.setText(String.valueOf(this.getSatsInView(getApplicationContext())));
-//
-//        TextView siu = (TextView) findViewById(R.id.siu_value);
-//        siu.setText(String.valueOf(this.getSatsInUse(getApplicationContext())));
-
 
     }
 
