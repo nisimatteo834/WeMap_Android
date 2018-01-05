@@ -1,6 +1,8 @@
 package mainApp;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.location.GnssMeasurement;
 import android.location.GnssMeasurementsEvent;
@@ -17,8 +19,9 @@ import java.util.Collection;
  * Created by Matteo on 02/01/2018.
  */
 
+@SuppressLint("ValidFragment")
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class GnssData {
+public class GnssData extends Fragment {
 
 
     public GnssStatus mGnssStatus = null;
@@ -131,8 +134,18 @@ public class GnssData {
                     Wifi wifi = new Wifi(mcontext);
                     wifi.updateValues();
 
-                    TextView pdr = (TextView) ((Activity)mcontext).findViewById(R.id.pdr_value);
-                    pdr.setText(s);
+                    final String s_final = s;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("I'm here 123");
+
+                            TextView pdr = (TextView) ((Activity)mcontext).findViewById(R.id.pdr_value);
+                            pdr.setText(s_final);
+
+                        }
+                    });
 
                     System.out.println("MEASUREMENT RECEIVED");
                      super.onGnssMeasurementsReceived(eventArgs);
