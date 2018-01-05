@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     System.out.println("SATELLITES CHANGED");
                 }
             };
+
             this.addGnssMeasurementListener();
 
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -830,8 +831,18 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                     }
 
-                    TextView pdr = (TextView) findViewById(R.id.pdr_value);
-                    pdr.setText(s);
+                    final String s_final = s;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("I'm here 123");
+
+                            TextView pdr = (TextView) findViewById(R.id.pdr_value);
+                            pdr.setText(s_final);
+
+                        }
+                    });
+
 
                     System.out.println("MEASUREMENT RECEIVED");
                     super.onGnssMeasurementsReceived(eventArgs);
