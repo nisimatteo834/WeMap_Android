@@ -2,7 +2,6 @@ package mainApp;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -41,13 +41,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 150;
     public static Map<String, String> parameters = new HashMap<String, String>();
     static final int WIFI_ACTIVE = 1;
+    static final int GPS_ACTIVE = 2;
     public AlertDialog wifi_diag;
     public AlertDialog gps_diag;
     public LocationListener locationListener = null;
     public GnssStatus mGnssStatus = null;
     public GnssMeasurementsEvent.Callback mGnssMeasurementListener;
     public GnssStatus.Callback mGnssStatusCallback;
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 10 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
+    public static Button add = null;
+    public static FloatingActionButton plus = null;
+    public static Button save = null;
 
     //The minimum time beetwen updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 0;//1000 * 60 * 1; // 1 minute
@@ -60,15 +64,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.checkWifi();
-        this.checkGPS();
         setContentView(R.layout.activity_main);
+        this.checkGPS();
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new GpsData(MainActivity.this);
         wifi = new Wifi(MainActivity.this);
+        locationListener = new GpsData(MainActivity.this,wifi);
         this.addGnssStatusCallBack();
         this.addGnssMeasurementListener();
+
 
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -91,9 +94,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
         this.initLocationService(MainActivity.this, locationListener);
+        save = (Button) findViewById(R.id.buttonSave);
+        add = (Button) findViewById(R.id.buttonAdd);
+        plus = (FloatingActionButton) findViewById(R.id.plus);
 
-        Button add = (Button) findViewById(R.id.buttonAdd);
-        add.setOnClickListener(new View.OnClickListener() {
+
+        plus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 final TextView ssid = (TextView) findViewById(R.id.SSID_value);
@@ -134,6 +140,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 startActivity(myIntent);
             }
         });
+
+        if (wifi.isOnline() && wifi.isEnabled())
+        {
+            plus.setVisibility(View.VISIBLE);
+
+        }
+        else {
+            save.setVisibility(View.VISIBLE);
+            save.setText("CHECK CONNECTION");
+        }
         wifi.updateValues();
 
 
@@ -143,15 +159,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     protected void onPause() {
         locationManager.removeUpdates(locationListener);
         super.onPause();
-        if (this.isOnline()) {
-            TextView connection = (TextView) findViewById(R.id.connection);
-            connection.setText("You are CONNECTED");
-            // Do something you haz internet!
-        } else {
-            TextView connection = (TextView) findViewById(R.id.connection);
-            connection.setText("You are NOT CONNECTED");
-
-        }
+        //this.checkConnection();
     }
 
     @Override
@@ -161,18 +169,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     protected void onResume() {
         super.onResume();
-        this.checkWifi();
+        wifi.setWifiEnabled(true);
         this.checkGPS();
-//        if (this.isOnline()) {
-//            TextView connection = (TextView) findViewById(R.id.connection);
-//            connection.setText("You are CONNECTED");
-//            // Do something you haz internet!
-//        } else {
-//            TextView connection = (TextView) findViewById(R.id.connection);
-//            connection.setText("You are NOT CONNECTED");
-//            wifi.setWifiEnabled(true);
-//
-//        }
+
         wifi.updateValues();
         this.initLocationService(getApplicationContext(), locationListener);
 
@@ -302,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                 Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivityForResult(myIntent, 2);
+                startActivityForResult(myIntent, GPS_ACTIVE);
 
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -333,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         wifi_diag.show();
     }
 
-    private void checkWifi() {
+    public void checkWifi() {
 
         try {
             if (!wifi.isEnabled()) {
@@ -369,6 +368,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (resultCode == RESULT_OK) {
                 // The Intent's data Uri identifies which contact was selected.
                 wifi_diag.dismiss();
+                // Do something with the contact here (bigger example below)
+            }
+        }
+        if (requestCode == GPS_ACTIVE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The Intent's data Uri identifies which contact was selected.
+                gps_diag.dismiss();
                 // Do something with the contact here (bigger example below)
             }
         }
@@ -477,7 +484,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("I'm here 123");
                             TextView pdr = (TextView) findViewById(R.id.pdr_value);
                             pdr.setText(s_final);
                             TextView sat = (TextView) findViewById(R.id.siv_value);
@@ -499,9 +505,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
         else {
-            System.out.print("Devices not enabled for GNSS measurements");
+            TextView pdr = (TextView) findViewById(R.id.pdr_value);
+            pdr.setText("Raw Data not av. on this device");
+            System.out.print("Raw Data not av. on this device");
         }
     }
+
+
 
 }
 

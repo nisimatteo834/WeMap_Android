@@ -19,9 +19,16 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
-public class Wifi {
+public class Wifi extends BroadcastReceiver {
 
     private Context mContext;
     private WifiManager wifi;
@@ -30,12 +37,28 @@ public class Wifi {
     private static final int MAX_RSSI = -55;
 
 
+
     public Wifi(Context context){
         this.mContext = context;
         this.wifi =  (WifiManager) this.mContext.getSystemService(Context.WIFI_SERVICE);
+        wifi.setWifiEnabled(true);
     }
 
     public void updateValues() {
+
+        if (isOnline() && this.isEnabled())
+        {
+            MainActivity.plus.setVisibility(View.VISIBLE);
+            MainActivity.save.setVisibility(View.INVISIBLE);
+        }
+
+        else
+        {
+            MainActivity.plus.setVisibility(View.INVISIBLE);
+            MainActivity.save.setVisibility(View.VISIBLE);
+            MainActivity.save.setText("CHECK CONNECTION");
+
+        }
 
 //wifi values updating
         String ssid = wifi.getConnectionInfo().getSSID();
@@ -43,7 +66,6 @@ public class Wifi {
         Integer speed = wifi.getConnectionInfo().getLinkSpeed();
 
         String result = "";
-        //while (result.equals("")) {
         try {
             result = new SpeedTestTask(mContext).execute().get();
         } catch (InterruptedException e) {
@@ -51,7 +73,6 @@ public class Wifi {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        //}
 
         System.out.println("Result: "+ result);
 
@@ -183,6 +204,33 @@ public class Wifi {
             //handle exception
         }
         return "";
+    }
+
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        ConnectivityManager conMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMan.getActiveNetworkInfo();
+        Toast toast = null;
+        if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI)
+        {   toast = Toast.makeText(mContext,"Have Wifi Connection", Toast.LENGTH_LONG);
+            toast.show();
+            Log.d("WifiReceiver", "Have Wifi Connection");}
+        else
+        {
+            toast = Toast.makeText(mContext,"Have Wifi Connection", Toast.LENGTH_LONG);
+            toast.show();
+            Log.d("WifiReceiver", "Don't have Wifi Connection");}
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+
+    public void setWifiEnabled(Boolean bool){
+        wifi.setWifiEnabled(bool);
     }
 
 

@@ -32,14 +32,19 @@ public class GpsData implements LocationListener {
     boolean canGetLocation = false; // flag for either cellular or satellite status
 
     private static Context mContext;
+    private Wifi wifi = null;
 
-    public GpsData(Context context) {
+    public GpsData(Context context,Wifi wifi) {
         this.mContext = context;
+        this.wifi = wifi;
+
     }
 
     @Override
     public void onLocationChanged(Location location) {
         this.updateCoordinates(location);
+        wifi.updateValues();
+
     }
 
     @Override
