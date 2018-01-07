@@ -49,14 +49,11 @@ public class Wifi extends BroadcastReceiver {
         if (isOnline() && this.isEnabled())
         {
             MainActivity.plus.setVisibility(View.VISIBLE);
-            MainActivity.save.setVisibility(View.INVISIBLE);
         }
 
         else
         {
             MainActivity.plus.setVisibility(View.INVISIBLE);
-            MainActivity.save.setVisibility(View.VISIBLE);
-            MainActivity.save.setText("CHECK CONNECTION");
 
         }
 
@@ -64,20 +61,6 @@ public class Wifi extends BroadcastReceiver {
         String ssid = wifi.getConnectionInfo().getSSID();
         String ip = Formatter.formatIpAddress(wifi.getConnectionInfo().getIpAddress());
         Integer speed = wifi.getConnectionInfo().getLinkSpeed();
-
-        String result = "";
-        try {
-            result = new SpeedTestTask(mContext).execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Result: "+ result);
-
-        TextView st = (TextView) ((Activity)mContext).findViewById(R.id.s_test);
-        st.setText(result + " Mbps");
 
         int rssi = wifi.getConnectionInfo().getRssi();
         String gw = Formatter.formatIpAddress(wifi.getDhcpInfo().gateway);

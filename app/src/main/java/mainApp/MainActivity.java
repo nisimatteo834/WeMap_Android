@@ -1,6 +1,7 @@
 package mainApp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,7 +30,11 @@ import android.widget.TextView;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import android.widget.Button;
+
+import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     LocationManager locationManager = null;
@@ -94,13 +99,31 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
         this.initLocationService(MainActivity.this, locationListener);
-        save = (Button) findViewById(R.id.buttonSave);
-        add = (Button) findViewById(R.id.buttonAdd);
+        //save = (Button) findViewById(R.id.buttonSave);
+        //add = (Button) findViewById(R.id.buttonAdd);
         plus = (FloatingActionButton) findViewById(R.id.plus);
 
 
         plus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+
+                String result = "";
+                    try {
+                        result = new SpeedTestTask(getApplicationContext()).execute().get();
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+
+                System.out.println("Result: "+ result);
+
+
+
+
+
 
                 final TextView ssid = (TextView) findViewById(R.id.SSID_value);
                 final TextView gateway = (TextView) findViewById(R.id.gateway_value);

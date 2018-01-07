@@ -27,11 +27,12 @@ public class SpeedTestTask extends AsyncTask<Void, Integer, String> {
 
     private final Context context;
 
-    public SpeedTestTask(Context context){
+    public SpeedTestTask(Context context) {
         this.context = context;
     }
 
     public static String bitrate = "";
+
     @Override
     protected String doInBackground(Void... params) {
 
@@ -46,8 +47,8 @@ public class SpeedTestTask extends AsyncTask<Void, Integer, String> {
                 Log.v("speedtest", "[COMPLETED] rate in octet/s : " + report.getTransferRateOctet());
                 Log.v("speedtest", "[COMPLETED] rate in bit/s   : " + report.getTransferRateBit());
 
-                BigDecimal powerofsix = new BigDecimal(Math.pow(10,6));
-                BigDecimal inMbit = report.getTransferRateBit().divide(powerofsix,2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal powerofsix = new BigDecimal(Math.pow(10, 6));
+                BigDecimal inMbit = report.getTransferRateBit().divide(powerofsix, 2, BigDecimal.ROUND_HALF_UP);
                 SpeedTestTask.bitrate = inMbit.toString();
 
             }
@@ -63,14 +64,19 @@ public class SpeedTestTask extends AsyncTask<Void, Integer, String> {
 //                Log.v("speedtest", "[PROGRESS] progress : " + percent + "%");
 //                Log.v("speedtest", "[PROGRESS] rate in octet/s : " + report.getTransferRateOctet());
 //                Log.v("speedtest", "[PROGRESS] rate in bit/s   : " + report.getTransferRateBit());
+                BigDecimal powerofsix = new BigDecimal(Math.pow(10, 6));
+                BigDecimal inMbit = report.getTransferRateBit().divide(powerofsix, 2, BigDecimal.ROUND_HALF_UP);
+                SpeedTestTask.bitrate = inMbit.toString();
             }
         });
 
-        //speedTestSocket.startFixedDownload("2.testdebit.info",80);
         speedTestSocket.startDownload("ftp://speedtest.tele2.net/20MB.zip");
 
-        //speedTestSocket.startFixedDownload("ftp://speedtest.tele2.net/20MB.zip",10000);
-
+        try {
+            sleep(4000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return SpeedTestTask.bitrate;
     }
 }
