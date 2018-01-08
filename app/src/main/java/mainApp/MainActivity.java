@@ -170,8 +170,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         }
         else {
-            save.setVisibility(View.VISIBLE);
-            save.setText("CHECK CONNECTION");
+            plus.setVisibility(View.INVISIBLE);
+
         }
         wifi.updateValues();
 
@@ -516,7 +516,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         }
                     });
 
-                    System.out.println("MEASUREMENT RECEIVED");
+                    //System.out.println("MEASUREMENT RECEIVED");
                     super.onGnssMeasurementsReceived(eventArgs);
                 }
 

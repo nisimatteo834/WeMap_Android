@@ -1,9 +1,11 @@
 package mainApp;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -14,6 +16,8 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,9 +53,24 @@ public class SaveActivity extends AppCompatActivity {
         TextView enviroment = (TextView) findViewById(R.id.environment);
         enviroment.setText(InstitutionActivity.choices[3]);
 
-
         TextView room = (TextView) findViewById(R.id.room);
+        TextView lat = (TextView) findViewById(R.id.lat);
+        TextView lon = (TextView) findViewById(R.id.lon);
+
+        if (InstitutionActivity.choices[3].equals("Outside the building")){
+            room.setText("/");
+            TableRow lat_row = (TableRow) findViewById(R.id.lat_row);
+            TableRow lon_row = (TableRow) findViewById(R.id.lon_row);
+            lat_row.setVisibility(View.VISIBLE);
+            lon_row.setVisibility(View.VISIBLE);
+            lat.setText(MainActivity.parameters.get("latitude"));
+            lon.setText(MainActivity.parameters.get("longitude"));
+
+        }
+
+        else {
         room.setText(InstitutionActivity.choices[4]);
+        }
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 

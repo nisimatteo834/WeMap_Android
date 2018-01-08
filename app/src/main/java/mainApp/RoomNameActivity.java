@@ -1,6 +1,9 @@
 package mainApp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,9 +16,14 @@ import org.json.*;
 
 import android.widget.AdapterView.OnItemClickListener;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 
 
 /**
@@ -23,41 +31,130 @@ import java.util.Collection;
  */
 
 public class RoomNameActivity extends AppCompatActivity {
+
+    //final HashMap<Integer,String> IRooms = new HashMap<>();
+    final ArrayList<String> IRooms = new ArrayList<>();
+    final ArrayList<String> MRooms = new ArrayList<>();
+    final ArrayList<String> NRooms = new ArrayList<>();
+    final ArrayList<String> TRooms = new ArrayList<>();
+    final ArrayList<String> ISMBRooms = new ArrayList<>();
+
+    final ArrayList<String> ICorridor = new ArrayList<>();
+    final ArrayList<String> MCorridor = new ArrayList<>();
+    final ArrayList<String> NCorridor = new ArrayList<>();
+    final ArrayList<String> TCorridor = new ArrayList<>();
+    final ArrayList<String> ISMBCorridor = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getBoolean("firstTime", false)) {
+
+            String rooms_string = this.loadJSONFromAsset(getApplicationContext());
+            try {
+                JSONObject rooms = new JSONObject(rooms_string);
+                String[] buildings = new String[]{"I","T","M","N","ismb"};
+                for (String s : buildings )
+                {
+                    rooms.get(s);
+                    switch (s){
+                        case "I":{
+                            JSONArray roomsBuilding = (JSONArray) rooms.get(s);
+                            for (int i =0; i<roomsBuilding.length(); i++){
+                                JSONObject obj = roomsBuilding.getJSONObject(i);
+                                if (obj.get("name").toString().matches(".*\\d."))
+                                    IRooms.add(obj.get("name").toString());
+                                if (obj.get("name").toString().contains("corr"))
+                                    ICorridor.add(obj.get("name").toString());
+                            }
+
+                             break;
+                        }
+
+                        case "ismb":{
+                            JSONArray roomsBuilding = (JSONArray) rooms.get(s);
+                            for (int i =0; i<roomsBuilding.length(); i++){
+                                JSONObject obj = roomsBuilding.getJSONObject(i);
+                                if (obj.get("name").toString().matches(".*\\d+.*"))
+                                    ISMBRooms.add(obj.get("name").toString());
+                                if (obj.get("name").toString().contains("corr"))
+                                    ISMBCorridor.add(obj.get("name").toString());
+                            }
+
+                            break;
+                        }
+
+                        case "N":{
+                            JSONArray roomsBuilding = (JSONArray) rooms.get(s);
+                            for (int i =0; i<roomsBuilding.length(); i++){
+                                JSONObject obj = roomsBuilding.getJSONObject(i);
+                                //checks if it's a room
+                                if (obj.get("name").toString().matches(".*\\d+.*"))
+                                    {NRooms.add(obj.get("name").toString());}
+                                if (obj.get("name").toString().contains("corr"))
+                                    NCorridor.add(obj.get("name").toString());
+                            }
+
+                            break;
+                        }
+                        case "T":{
+                            JSONArray roomsBuilding = (JSONArray) rooms.get(s);
+                            for (int i =0; i<roomsBuilding.length(); i++){
+                                JSONObject obj = roomsBuilding.getJSONObject(i);
+                                if (obj.get("name").toString().matches(".*\\d+.*"))
+                                    TRooms.add(obj.get("name").toString());
+                                if (obj.get("name").toString().contains("corr"))
+                                    TCorridor.add(obj.get("name").toString());
+                            }
+
+                            break;
+                        }
+                        case "M":{
+                            JSONArray roomsBuilding = (JSONArray) rooms.get(s);
+                            for (int i =0; i<roomsBuilding.length(); i++){
+                                JSONObject obj = roomsBuilding.getJSONObject(i);
+                                if (obj.get("name").toString().matches(".*\\d+.*"))
+                                    MRooms.add(obj.get("name").toString());
+                                if (obj.get("name").toString().contains("corr"))
+                                    MCorridor.add(obj.get("name").toString());
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        }
         // Get the view from new_activity.xml
         setContentView(R.layout.second_screen);
 
 
-        try {
-            JSONObject obj = new JSONObject("....");
-            String[] TRooms;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        ArrayList<String> roomName;
+        ArrayList<String> corridorName;
 
-
-        final String[] roomName;
-        final String[] IRooms = new String[]{"1i","2i","3i","4i","5i","6i","7i","8i","9i","10i","11i","12i"};
-        final String[] MRooms = new String[]{"1M","2M","3M","4M"};
-        final String[] NRooms = new String[]{"1N","2N","3N","4N"};
         if (InstitutionActivity.getChoices()[2].equals("Rooms I")) {
-            roomName= IRooms;
+            roomName =  IRooms;
+            corridorName = ICorridor;
         } else if (InstitutionActivity.getChoices()[2].equals("Rooms M")){
             roomName = MRooms;
+            corridorName = MCorridor;
 
         } else if (InstitutionActivity.getChoices()[2].equals("Rooms N")) {
-            roomName = MRooms;
-        } else { roomName= NRooms;}
+            roomName = NRooms;
+            corridorName = NCorridor;
+        } else if (InstitutionActivity.getChoices()[2].equals("Room T")) { roomName= TRooms; corridorName = TCorridor;}
 
-        final  String[] corridorName = roomName.clone();
-        int cnt = 0;
-        for (String tmp:roomName){
-            corridorName[cnt]=("In front of room " + tmp);
-            cnt++;
-        }
-        final String[] toShow;
+        else {roomName = null; corridorName = null;}
+
+        final ArrayList<String> toShow;
 
         if (InOutCorrActivity.getInCorr().equals("Inside a room")) {
             toShow = roomName;
@@ -72,7 +169,7 @@ public class RoomNameActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> av, View v, int pos, long id)
             {
-                InstitutionActivity.setChoice(toShow[pos],4);
+                InstitutionActivity.setChoice(toShow.get(pos),4);
                 String[] toPrint = InstitutionActivity.getChoices();
 
                 Intent myIntent = new Intent(RoomNameActivity.this,
@@ -86,6 +183,33 @@ public class RoomNameActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    public String loadJSONFromAsset(Context context) {
+        String json = null;
+        try {
+
+            InputStream is = getResources().openRawResource(
+                    getResources().getIdentifier("rooms",
+                            "raw", getPackageName()));
+
+            int size = is.available();
+
+            byte[] buffer = new byte[size];
+
+            is.read(buffer);
+
+            is.close();
+
+            json = new String(buffer, "UTF-8");
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
 
     }
 }

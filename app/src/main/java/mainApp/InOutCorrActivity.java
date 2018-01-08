@@ -47,6 +47,13 @@ public class InOutCorrActivity extends AppCompatActivity {
                             RoomNameActivity.class);
                     startActivity(myIntent4);
                 }
+
+                else{
+                    setInCorr(inOutCorr[pos]);
+                    Intent myIntent4 = new Intent(InOutCorrActivity.this,
+                            SaveActivity.class);
+                    startActivity(myIntent4);
+                }
             }
         });
 
