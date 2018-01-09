@@ -14,7 +14,8 @@
     <string name="rssi">RSSI</string>
     <string name="speed">Speed</string>
     <string name="general">Insert one of the following</string>
-    <string name="help">\n \nWhen your WiFi is on and your connection reaches the Internet a + button will happear.\nBy clicking on it a download of 20 Mb will start to check your download speed. It will take 4 seconds approximately.</string>
+    <string name="help">\n \nWhen your WiFi is on and your connection reaches the Internet a + button will happear.\nBy clicking on it a download of 20 Mb will start to check your download speed. It will take 4 seconds approximately.\n\n
+    </string>
 
 
 </resources>
