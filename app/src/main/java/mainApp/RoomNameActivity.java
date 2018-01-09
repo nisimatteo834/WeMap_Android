@@ -65,9 +65,13 @@ public class RoomNameActivity extends AppCompatActivity {
                             JSONArray roomsBuilding = (JSONArray) rooms.get(s);
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
-                                if (obj.get("name").toString().matches(".*\\d."))
+                                if (obj.get("name").toString().matches(".*corr.*"))
+                                    ICorridor.add(obj.get("name").toString());
+
+                                else if (obj.get("name").toString().matches(".*[0-9]{1,2}[i]"))
                                     IRooms.add(obj.get("name").toString());
-                                if (obj.get("name").toString().contains("corr"))
+                                else
+                                    //if (obj.get("name").toString().contains("corr"))
                                     ICorridor.add(obj.get("name").toString());
                             }
 
@@ -80,7 +84,8 @@ public class RoomNameActivity extends AppCompatActivity {
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
                                 if (obj.get("name").toString().matches(".*\\d+.*"))
                                     ISMBRooms.add(obj.get("name").toString());
-                                if (obj.get("name").toString().contains("corr"))
+                                else
+                                //if (obj.get("name").toString().contains("corr"))
                                     ISMBCorridor.add(obj.get("name").toString());
                             }
 
@@ -92,9 +97,13 @@ public class RoomNameActivity extends AppCompatActivity {
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
                                 //checks if it's a room
-                                if (obj.get("name").toString().matches(".*\\d+.*"))
-                                    {NRooms.add(obj.get("name").toString());}
-                                if (obj.get("name").toString().contains("corr"))
+                                if (obj.get("name").toString().matches(".*corr.*"))
+                                    NCorridor.add(obj.get("name").toString());
+
+                                else if (obj.get("name").toString().matches(".*[0-9]{1,2}[n]"))
+                                    NRooms.add(obj.get("name").toString());
+                                else
+                                    //if (obj.get("name").toString().contains("corr"))
                                     NCorridor.add(obj.get("name").toString());
                             }
 
@@ -104,9 +113,13 @@ public class RoomNameActivity extends AppCompatActivity {
                             JSONArray roomsBuilding = (JSONArray) rooms.get(s);
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
-                                if (obj.get("name").toString().matches(".*\\d+.*"))
+                                if (obj.get("name").toString().matches(".*corr.*"))
+                                    TCorridor.add(obj.get("name").toString());
+
+                                else if (obj.get("name").toString().matches(".*[0-9]{1,2}[t]"))
                                     TRooms.add(obj.get("name").toString());
-                                if (obj.get("name").toString().contains("corr"))
+                                else
+                                //if (obj.get("name").toString().contains("corr"))
                                     TCorridor.add(obj.get("name").toString());
                             }
 
@@ -116,9 +129,13 @@ public class RoomNameActivity extends AppCompatActivity {
                             JSONArray roomsBuilding = (JSONArray) rooms.get(s);
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
-                                if (obj.get("name").toString().matches(".*\\d+.*"))
+                                if (obj.get("name").toString().matches(".*corr.*"))
+                                    MCorridor.add(obj.get("name").toString());
+
+                                else if (obj.get("name").toString().matches(".*[0-9]{1,2}[M]"))
                                     MRooms.add(obj.get("name").toString());
-                                if (obj.get("name").toString().contains("corr"))
+                                else
+                                    //if (obj.get("name").toString().contains("corr"))
                                     MCorridor.add(obj.get("name").toString());
                             }
 
@@ -150,7 +167,7 @@ public class RoomNameActivity extends AppCompatActivity {
         } else if (InstitutionActivity.getChoices()[2].equals("Rooms N")) {
             roomName = NRooms;
             corridorName = NCorridor;
-        } else if (InstitutionActivity.getChoices()[2].equals("Room T")) { roomName= TRooms; corridorName = TCorridor;}
+        } else if (InstitutionActivity.getChoices()[2].equals("Rooms T")) { roomName= TRooms; corridorName = TCorridor;}
 
         else {roomName = null; corridorName = null;}
 
