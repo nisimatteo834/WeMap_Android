@@ -118,11 +118,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                 System.out.println("Result: "+ result);
 
-
-
-
-
-
                 final TextView ssid = (TextView) findViewById(R.id.SSID_value);
                 final TextView gateway = (TextView) findViewById(R.id.gateway_value);
                 final TextView macAp = (TextView) findViewById(R.id.apMAC_value);
@@ -133,27 +128,36 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 final TextView accuracy = (TextView) findViewById(R.id.accuracy_value);
                 final TextView phoneType = (TextView) findViewById(R.id.device_value);
                 final TextView distance = (TextView) findViewById(R.id.distance_value);
-//        final TextView satInView = (TextView) findViewById(R.id.siv_value);
-//        final TextView satInUse = (TextView) findViewById(R.id.siu_value);
+                final TextView satInView = (TextView) findViewById(R.id.siv_value);
+                final TextView pseudorange = (TextView) findViewById(R.id.pdr_value);
                 final TextView rssi = (TextView) findViewById(R.id.rssi_value);
 
                 String ssidValue = ssid.getText().toString();
                 //add this to remove the ""
                 ssidValue = ssidValue.replace("\"", "");
 
+                String satInViewValue = satInView.getText().toString();
+                if(satInViewValue == "Raw Data not Available" )
+                    satInViewValue = null;
+
+                String pdrValue = pseudorange.getText().toString();
+                if(satInViewValue == "Pdr Not Available" )
+                    pdrValue = null;
+
                 parameters.put("SSID", ssidValue);
                 parameters.put("ip", gateway.getText().toString());
                 parameters.put("MAC", macAp.getText().toString());
-                parameters.put("speedInternet", speed.getText().toString());
+                parameters.put("device2ApSpeed", speed.getText().toString());
                 parameters.put("phone_mac", macUser.getText().toString());
                 parameters.put("latitude", lat.getText().toString());
                 parameters.put("longitude", longitude.getText().toString());
                 parameters.put("gps_accuracy", accuracy.getText().toString());
                 parameters.put("phone_type", phoneType.getText().toString());
                 parameters.put("distance", distance.getText().toString());
-//                        parameters.put("satellite_in_view", satInView.getText().toString());
-//                        parameters.put("satellite_in_use", satInUse.getText().toString());
+                parameters.put("satellite_in_view", satInViewValue);
+                parameters.put("pseudorange", pdrValue);
                 parameters.put("RSSI", rssi.getText().toString());
+                parameters.put("speedInternet", result);
                 //change it
                 parameters.put("allrooms_id", "370");
 
