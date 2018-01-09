@@ -136,13 +136,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 //add this to remove the ""
                 ssidValue = ssidValue.replace("\"", "");
 
-                String satInViewValue = satInView.getText().toString();
-                if(satInViewValue == "Raw Data not Available" )
-                    satInViewValue = null;
+                String satInViewValue;// = satInView.getText().toString();
+                if(satInView.getText().toString().equalsIgnoreCase("Raw Data not Available"))
+                    satInViewValue = "";
+                else
+                    satInViewValue = satInView.getText().toString();
 
-                String pdrValue = pseudorange.getText().toString();
-                if(satInViewValue == "Pdr Not Available" )
-                    pdrValue = null;
+                String pdrValue;
+                if(pseudorange.getText().toString().equalsIgnoreCase("Pdr Not Available"))
+                    pdrValue = "";
+                else
+                    pdrValue = pseudorange.getText().toString();
 
                 parameters.put("SSID", ssidValue);
                 parameters.put("ip", gateway.getText().toString());
