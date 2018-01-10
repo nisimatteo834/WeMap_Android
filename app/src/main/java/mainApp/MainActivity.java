@@ -550,8 +550,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         else {
             TextView pdr = (TextView) findViewById(R.id.pdr_value);
-            pdr.setText("Raw Data not av. on this device");
-            System.out.print("Raw Data not av. on this device");
+            pdr.setText("Pdr Not Available");
         }
     }
 

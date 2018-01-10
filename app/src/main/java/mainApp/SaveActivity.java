@@ -1,5 +1,7 @@
 package mainApp;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +23,7 @@ import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Matteo on 13/12/2017.
@@ -32,6 +35,7 @@ public class SaveActivity extends AppCompatActivity {
     //String insertUrl = "http://192.168.43.135:8080/insert.php";//"http://192.168.1.65/insert.php";
     //String insertUrl = "http://192.168.1.81:8080/insert.php";//"http://188.216.115.130/insert.php";
     String insertUrl = "http://5.89.130.153/insert.php";
+    boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +92,17 @@ public class SaveActivity extends AppCompatActivity {
 
                         if (response.contains("wifiauth.polito.it/login.html?redirect")) {
                             TextView result = (TextView) findViewById(R.id.results);
-                            result.setText("AUTH TO THE NETOWORK");
+                            result.setText("AUTH TO THE NETWORK");
+                            result.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://wifiauth.polito.it"));
+                                    startActivity(browserIntent);
+                                    TextView result = (TextView) findViewById(R.id.results);
+                                            result.setText("");
+                                    flag = true;
+                                }
+                            });
                             System.out.println("OK");
                         } else {
                             TextView result = (TextView) findViewById(R.id.results);
@@ -108,7 +122,26 @@ public class SaveActivity extends AppCompatActivity {
 
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
+
                         //add this to remove the ""
+
+                        if (flag)
+                        {
+                            String result = "";
+                            try {
+                                result = new SpeedTestTask(getApplicationContext()).execute().get();
+
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+
+                            System.out.println("Result: "+ result);
+                            flag = false;
+                            MainActivity.parameters.put("speedInternet",result);
+                        }
+
                         Map<String, String> parameters = new HashMap<String, String>();
                         parameters = MainActivity.parameters;
                         return parameters;
