@@ -62,6 +62,21 @@ public class SaveActivity extends AppCompatActivity {
         TextView lat = (TextView) findViewById(R.id.lat);
         TextView lon = (TextView) findViewById(R.id.lon);
 
+        if (!(InstitutionActivity.choices[3].equals("Inside a room"))){
+
+            TableRow grid = (TableRow) findViewById(R.id.grid);
+            grid.setVisibility(View.INVISIBLE);
+
+            TextView grid_t = (TextView) findViewById(R.id.grid_t);
+        }
+
+        else {
+            TextView grid_t = (TextView) findViewById(R.id.grid_t);
+            grid_t.setText(InstitutionActivity.getChoices()[5]);
+            TableRow grid = (TableRow) findViewById(R.id.grid);
+            grid.setVisibility(View.VISIBLE);
+        }
+
         if (InstitutionActivity.choices[3].equals("Outside the building")) {
             room.setText("/");
             TableRow lat_row = (TableRow) findViewById(R.id.lat_row);

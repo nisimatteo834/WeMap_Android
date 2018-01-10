@@ -89,6 +89,26 @@
                 android:layout_height="wrap_content" />
         </TableRow>
 
+
+        <TableRow
+            android:id="@+id/grid"
+            android:layout_width="match_parent"
+            android:visibility="invisible"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Grid" />
+
+            <TextView
+                android:id="@+id/grid_t"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+
+
         <TableRow
             android:id="@+id/lat_row"
             android:layout_width="match_parent"

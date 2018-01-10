@@ -62,6 +62,7 @@
         <activity android:name=".RoomNameActivity"/>
         <activity android:name=".SaveActivity"/>
         <activity android:name=".OnboardingActivity"/>
+        <activity android:name=".RoomGridActivity"/>
 
 
         <service

@@ -223,12 +223,22 @@ public class RoomNameActivity extends AppCompatActivity {
                 InstitutionActivity.setChoice(toShow.get(pos),4);
                 String[] toPrint = InstitutionActivity.getChoices();
 
-                Intent myIntent = new Intent(RoomNameActivity.this,
-                        SaveActivity.class);
-                startActivity(myIntent);
 
-                String message = toPrint[0] +"\n"+ toPrint[1]+"\n"+ toPrint[2]+"\n" + toPrint[3]+"\n" + toPrint[4];
-                Toast.makeText(getApplicationContext(),message, Toast.LENGTH_LONG).show();
+                if (InstitutionActivity.getChoices()[3].equals("Inside a room")){
+                    Intent myIntent = new Intent(RoomNameActivity.this,
+                            RoomGridActivity.class);
+                    startActivity(myIntent);
+                }
+
+                else {
+                    Intent myIntent = new Intent(RoomNameActivity.this,
+                            SaveActivity.class);
+                    startActivity(myIntent);
+
+                    String message = toPrint[0] + "\n" + toPrint[1] + "\n" + toPrint[2] + "\n" + toPrint[3] + "\n" + toPrint[4];
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                }
+
 
 
             }
