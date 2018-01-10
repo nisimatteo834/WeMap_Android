@@ -32,6 +32,7 @@ public class SaveActivity extends AppCompatActivity {
     //String insertUrl = "http://192.168.43.135:8080/insert.php";//"http://192.168.1.65/insert.php";
     //String insertUrl = "http://192.168.1.81:8080/insert.php";//"http://188.216.115.130/insert.php";
     String insertUrl = "http://5.89.130.153/insert.php";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +58,7 @@ public class SaveActivity extends AppCompatActivity {
         TextView lat = (TextView) findViewById(R.id.lat);
         TextView lon = (TextView) findViewById(R.id.lon);
 
-        if (InstitutionActivity.choices[3].equals("Outside the building")){
+        if (InstitutionActivity.choices[3].equals("Outside the building")) {
             room.setText("/");
             TableRow lat_row = (TableRow) findViewById(R.id.lat_row);
             TableRow lon_row = (TableRow) findViewById(R.id.lon_row);
@@ -66,18 +67,16 @@ public class SaveActivity extends AppCompatActivity {
             lat.setText(MainActivity.parameters.get("latitude"));
             lon.setText(MainActivity.parameters.get("longitude"));
 
-        }
-
-        else {
-        room.setText(InstitutionActivity.choices[4]);
+        } else {
+            room.setText(InstitutionActivity.choices[4]);
         }
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
         Button save = (Button) findViewById(R.id.buttonSave);
 
-        save.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View w){
+        save.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View w) {
 
                 requestQueue = Volley.newRequestQueue(getApplicationContext());
 
@@ -86,10 +85,16 @@ public class SaveActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
-                        TextView result = (TextView) findViewById(R.id.results);
-                        result.setText("DATA UPLOADED");
-                        System.out.println("OK");
 
+                        if (response.contains("wifiauth.polito.it/login.html?redirect")) {
+                            TextView result = (TextView) findViewById(R.id.results);
+                            result.setText("AUTH TO THE NETOWORK");
+                            System.out.println("OK");
+                        } else {
+                            TextView result = (TextView) findViewById(R.id.results);
+                            result.setText("DATA UPLOADED");
+                            System.out.println("OK");
+                        }
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -113,7 +118,6 @@ public class SaveActivity extends AppCompatActivity {
 
             }
         });
-
 
 
     }

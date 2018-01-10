@@ -14,8 +14,32 @@
     <string name="rssi">RSSI</string>
     <string name="speed">Speed</string>
     <string name="general">Insert one of the following</string>
-    <string name="help">\n \nWhen your WiFi is on and your connection reaches the Internet a + button will happear.\nBy clicking on it a download of 20 Mb will start to check your download speed. It will take 4 seconds approximately.\n\n\n\n\n
-    </string>
+    <string name="help">\n \nWhen your WiFi is on and your connection reaches the Internet a + button will happear.\nBy clicking on it a download of 20 Mb will start to check your download speed. It will take 4 seconds approximately.\n\n\n\n\n     </string>
+    <string name="title_1"> Welcome on WeMap! </string>
+    <string name="pref_previously_started"></string>
+    <string name="title_2"> Before you begin </string>
+
+    <string name="title_3"> Main Page </string>
+
+    <string name="title_4">Speed Test\n and \nUser Location</string>
+
+    <string name="title_5"> Saving records </string>
+
+    <string name="title_6"> The menu </string>
+
+    <string name="title_7">We are now\n Ready to begin!</string>
+
+    <string name="text_1">Click to get started!\n It will take just a few seconds</string>
+
+    <string name="text_2">To use WeMap, connect to PoliTo wifi network. \n This version works for the Cittadella Politecnica only!</string>
+
+    <string name="text_3">In the main page you will find all the info about the Wi-Fi network you are connected to, your device info and the connection speed </string>
+
+    <string name="text_4">click on the (+) button to perform the internet speed test.\n Follow the instructions to specify your position</string>
+
+    <string name="text_5">Click "Save" button to send the collected data to our server.\n The data collected by all users will be used to create a cumulative Wi-Fi heat-map</string>
+
+    <string name="text_6">You can always check all your collected data from the menu</string>
 
 
 </resources>

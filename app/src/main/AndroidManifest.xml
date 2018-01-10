@@ -61,6 +61,7 @@
         <activity android:name=".InOutCorrActivity"/>
         <activity android:name=".RoomNameActivity"/>
         <activity android:name=".SaveActivity"/>
+        <activity android:name=".OnboardingActivity"/>
 
 
         <service

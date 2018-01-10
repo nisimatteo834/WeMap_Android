@@ -70,7 +70,8 @@ public class SpeedTestTask extends AsyncTask<Void, Integer, String> {
             }
         });
 
-        speedTestSocket.startDownload("ftp://speedtest.tele2.net/20MB.zip");
+        speedTestSocket.startDownload("http://2.testdebit.info/fichiers/10Mo.dat");
+        //speedTestSocket.startDownload("ftp://speedtest.tele2.net/20MB.zip");
 
         try {
             sleep(4000);
