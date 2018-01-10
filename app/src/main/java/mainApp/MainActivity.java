@@ -138,13 +138,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                 String satInViewValue;// = satInView.getText().toString();
                 if(satInView.getText().toString().equalsIgnoreCase("Raw Data not Available"))
-                    satInViewValue = "";
+                    satInViewValue = null;
                 else
                     satInViewValue = satInView.getText().toString();
 
                 String pdrValue;
                 if(pseudorange.getText().toString().equalsIgnoreCase("Pdr Not Available"))
-                    pdrValue = "";
+                    pdrValue = null;
                 else
                     pdrValue = pseudorange.getText().toString();
 

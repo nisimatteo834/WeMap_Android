@@ -30,8 +30,8 @@ public class SaveActivity extends AppCompatActivity {
 
     RequestQueue requestQueue;
     //String insertUrl = "http://192.168.43.135:8080/insert.php";//"http://192.168.1.65/insert.php";
-    String insertUrl = "http://192.168.1.81:8080/insert.php";//"http://188.216.115.130/insert.php";
-
+    //String insertUrl = "http://192.168.1.81:8080/insert.php";//"http://188.216.115.130/insert.php";
+    String insertUrl = "http://5.89.130.153/insert.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
