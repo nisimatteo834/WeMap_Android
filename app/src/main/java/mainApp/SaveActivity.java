@@ -61,6 +61,8 @@ public class SaveActivity extends AppCompatActivity {
         TextView room = (TextView) findViewById(R.id.room);
         TextView lat = (TextView) findViewById(R.id.lat);
         TextView lon = (TextView) findViewById(R.id.lon);
+        TextView speed = (TextView) findViewById(R.id.speed_test_value);
+        speed.setText(MainActivity.parameters.get("speedInternet"));
 
         if (!(InstitutionActivity.choices[3].equals("Inside a room"))){
 
@@ -105,7 +107,7 @@ public class SaveActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
 
-                        if (response.contains("wifiauth.polito.it/login.html?redirect")) {
+                        if (response.contains("wifiauth.polito.it")) {
                             TextView result = (TextView) findViewById(R.id.results);
                             result.setText("AUTH TO THE NETWORK");
                             result.setOnClickListener(new View.OnClickListener() {

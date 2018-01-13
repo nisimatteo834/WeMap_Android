@@ -107,6 +107,22 @@
                 android:layout_height="wrap_content" />
         </TableRow>
 
+        <TableRow
+            android:id="@+id/speed_test"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Speed Download" />
+
+            <TextView
+                android:id="@+id/speed_test_value"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
 
 
         <TableRow

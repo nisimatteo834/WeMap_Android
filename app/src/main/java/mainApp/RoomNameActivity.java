@@ -19,16 +19,15 @@ import android.widget.Toast;
 import org.json.*;
 
 
+
 import android.widget.AdapterView.OnItemClickListener;
+
+import com.google.common.collect.BiMap;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
+
 
 
 /**
@@ -38,6 +37,9 @@ import java.util.ListIterator;
 public class RoomNameActivity extends AppCompatActivity {
 
     //final HashMap<Integer,String> IRooms = new HashMap<>();
+    //final ArrayList<String> IRooms = new ArrayList<>();
+
+//    final BiMap<Integer,String> IMap = new Bidi();
     final ArrayList<String> IRooms = new ArrayList<>();
     final ArrayList<String> MRooms = new ArrayList<>();
     final ArrayList<String> NRooms = new ArrayList<>();
@@ -49,6 +51,20 @@ public class RoomNameActivity extends AppCompatActivity {
     final ArrayList<String> NCorridor = new ArrayList<>();
     final ArrayList<String> TCorridor = new ArrayList<>();
     final ArrayList<String> ISMBCorridor = new ArrayList<>();
+
+    final ArrayList<String> IRoomsIndex = new ArrayList<>();
+    final ArrayList<String> MRoomsIndex = new ArrayList<>();
+    final ArrayList<String> NRoomsIndex = new ArrayList<>();
+    final ArrayList<String> TRoomsIndex = new ArrayList<>();
+    final ArrayList<String> ISMBRoomsIndex = new ArrayList<>();
+
+    final ArrayList<String> ICorridorIndex = new ArrayList<>();
+    final ArrayList<String> MCorridorIndex = new ArrayList<>();
+    final ArrayList<String> NCorridorIndex = new ArrayList<>();
+    final ArrayList<String> TCorridorIndex = new ArrayList<>();
+    final ArrayList<String> ISMBCorridorIndex = new ArrayList<>();
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,13 +87,21 @@ public class RoomNameActivity extends AppCompatActivity {
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
                                 if (obj.get("name").toString().matches(".*corr.*"))
+                                {
                                     ICorridor.add(obj.get("name").toString());
+                                    ICorridorIndex.add(obj.get("_id").toString());
+                                }
+
 
                                 else if (obj.get("name").toString().matches(".*[0-9]{1,2}[i]"))
+                                {
                                     IRooms.add(obj.get("name").toString());
+                                    IRoomsIndex.add(obj.get("_id").toString());
+                                }
                                 else
-                                    //if (obj.get("name").toString().contains("corr"))
                                     ICorridor.add(obj.get("name").toString());
+                                    ICorridorIndex.add(obj.get("_id").toString());
+
                             }
 
                              break;
@@ -102,14 +126,24 @@ public class RoomNameActivity extends AppCompatActivity {
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
                                 //checks if it's a room
-                                if (obj.get("name").toString().matches(".*corr.*"))
+                                if (obj.get("name").toString().matches(".*corr.*")){
                                     NCorridor.add(obj.get("name").toString());
+                                    NCorridorIndex.add(obj.get("_id").toString());
+                                }
 
-                                else if (obj.get("name").toString().matches(".*[0-9]{1,2}[n]"))
+
+                                else if (obj.get("name").toString().matches(".*[0-9]{1,2}[n]")){
                                     NRooms.add(obj.get("name").toString());
+                                    NRoomsIndex.add(obj.get("_id").toString());
+
+                                }
                                 else
                                     //if (obj.get("name").toString().contains("corr"))
+                                {
                                     NCorridor.add(obj.get("name").toString());
+                                    NCorridorIndex.add(obj.get("_id").toString());
+
+                                }
                             }
 
                             break;
@@ -119,13 +153,24 @@ public class RoomNameActivity extends AppCompatActivity {
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
                                 if (obj.get("name").toString().matches(".*corr.*"))
+                                {
                                     TCorridor.add(obj.get("name").toString());
+                                    TCorridorIndex.add(obj.get("_id").toString());
+
+                                }
 
                                 else if (obj.get("name").toString().matches(".*[0-9]{1,2}[t]"))
+                                {
                                     TRooms.add(obj.get("name").toString());
+                                    TRoomsIndex.add(obj.get("_id").toString());
+                                }
                                 else
                                 //if (obj.get("name").toString().contains("corr"))
+                                {
                                     TCorridor.add(obj.get("name").toString());
+                                    TCorridorIndex.add(obj.get("_id").toString());
+
+                                }
                             }
 
                             break;
@@ -135,13 +180,25 @@ public class RoomNameActivity extends AppCompatActivity {
                             for (int i =0; i<roomsBuilding.length(); i++){
                                 JSONObject obj = roomsBuilding.getJSONObject(i);
                                 if (obj.get("name").toString().matches(".*corr.*"))
+                                {
                                     MCorridor.add(obj.get("name").toString());
+                                    MCorridorIndex.add(obj.get("_id").toString());
+
+                                }
 
                                 else if (obj.get("name").toString().matches(".*[0-9]{1,2}[M]"))
+                                {
                                     MRooms.add(obj.get("name").toString());
+                                    MRoomsIndex.add(obj.get("_id").toString());
+
+                                }
                                 else
                                     //if (obj.get("name").toString().contains("corr"))
+                                {
                                     MCorridor.add(obj.get("name").toString());
+                                    MCorridorIndex.add(obj.get("_id").toString());
+
+                                }
                             }
 
                             break;
@@ -159,22 +216,37 @@ public class RoomNameActivity extends AppCompatActivity {
         setContentView(R.layout.second_screen);
 
 
-        ArrayList<String> roomName;
+        final ArrayList<String> roomName;
         ArrayList<String> corridorName;
+        final ArrayList<String> roomNameIndex;
+        final ArrayList<String> corridorNameIndex;
+
 
         if (InstitutionActivity.getChoices()[2].equals("Rooms I")) {
             roomName =  IRooms;
             corridorName = ICorridor;
+            corridorNameIndex = ICorridorIndex;
+            roomNameIndex = IRoomsIndex;
         } else if (InstitutionActivity.getChoices()[2].equals("Rooms M")){
             roomName = MRooms;
             corridorName = MCorridor;
+            corridorNameIndex = MCorridorIndex;
+            roomNameIndex = MRoomsIndex;
 
         } else if (InstitutionActivity.getChoices()[2].equals("Rooms N")) {
             roomName = NRooms;
             corridorName = NCorridor;
-        } else if (InstitutionActivity.getChoices()[2].equals("Rooms T")) { roomName= TRooms; corridorName = TCorridor;}
+            corridorNameIndex = NCorridorIndex;
+            roomNameIndex = NRoomsIndex;
+        } else if (InstitutionActivity.getChoices()[2].equals("Rooms T")) {
+            roomName = TRooms;
+            corridorName = TCorridor;
+            corridorNameIndex = TCorridorIndex;
+            roomNameIndex = TRoomsIndex;
 
-        else {roomName = null; corridorName = null;}
+        }
+
+        else {roomName = null; corridorName = null; roomNameIndex =null; corridorNameIndex=null;}
 
         final ArrayList<String> toShow;
 
@@ -225,12 +297,20 @@ public class RoomNameActivity extends AppCompatActivity {
 
 
                 if (InstitutionActivity.getChoices()[3].equals("Inside a room")){
+
+                    InstitutionActivity.setChoice(roomNameIndex.get(pos),6);
+                    MainActivity.parameters.put("allrooms_id", roomNameIndex.get(pos));
+
                     Intent myIntent = new Intent(RoomNameActivity.this,
                             RoomGridActivity.class);
                     startActivity(myIntent);
+
                 }
 
                 else {
+                    InstitutionActivity.setChoice(corridorNameIndex.get(pos),6);
+                    MainActivity.parameters.put("allrooms_id", corridorNameIndex.get(pos));
+
                     Intent myIntent = new Intent(RoomNameActivity.this,
                             SaveActivity.class);
                     startActivity(myIntent);

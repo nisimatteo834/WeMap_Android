@@ -17,7 +17,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
@@ -26,12 +25,18 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import android.content.Context;
 
 import android.widget.Button;
 
@@ -75,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
-        if(!previouslyStarted) {
+        if (!previouslyStarted) {
 
 
             Intent tutorial = new Intent(MainActivity.this,
@@ -87,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         this.checkGPS();
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         wifi = new Wifi(MainActivity.this);
-        locationListener = new GpsData(MainActivity.this,wifi);
+        locationListener = new GpsData(MainActivity.this, wifi);
         this.addGnssStatusCallBack();
         this.addGnssMeasurementListener();
 
@@ -122,16 +127,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
 
                 String result = "";
-                    try {
-                        result = new SpeedTestTask(getApplicationContext()).execute().get();
+                try {
+                    result = new SpeedTestTask(getApplicationContext()).execute().get();
 
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
-                System.out.println("Result: "+ result);
+                System.out.println("Result: " + result);
 
                 final TextView ssid = (TextView) findViewById(R.id.SSID_value);
                 final TextView gateway = (TextView) findViewById(R.id.gateway_value);
@@ -152,13 +157,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 ssidValue = ssidValue.replace("\"", "");
 
                 String satInViewValue;// = satInView.getText().toString();
-                if(satInView.getText().toString().equalsIgnoreCase("Raw Data not Available"))
+                if (satInView.getText().toString().equalsIgnoreCase("Raw Data not Available"))
                     satInViewValue = "null";
                 else
                     satInViewValue = satInView.getText().toString();
 
                 String pdrValue;
-                if(pseudorange.getText().toString().equalsIgnoreCase("Pdr Not Available"))
+                if (pseudorange.getText().toString().equalsIgnoreCase("Pdr Not Available"))
                     pdrValue = "null";
                 else
                     pdrValue = pseudorange.getText().toString();
@@ -178,19 +183,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 parameters.put("RSSI", rssi.getText().toString());
                 parameters.put("speedInternet", result);
                 //change it
-                parameters.put("allrooms_id", "370");
+                //parameters.put("allrooms_id", "370");
 
                 Intent myIntent = new Intent(MainActivity.this, InstitutionActivity.class);
                 startActivity(myIntent);
             }
         });
 
-        if (wifi.isOnline() && wifi.isEnabled())
-        {
+        if (wifi.isOnline() && wifi.isEnabled()) {
             plus.setVisibility(View.VISIBLE);
 
-        }
-        else {
+        } else {
             plus.setVisibility(View.INVISIBLE);
 
         }
@@ -426,8 +429,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
 
-    public void addGnssStatusCallBack()
-    {
+    public void addGnssStatusCallBack() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mGnssStatusCallback = new GnssStatus.Callback() {
                 @Override
@@ -456,7 +458,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         }
     }
-    public void addGnssMeasurementListener(){
+
+    public void addGnssMeasurementListener() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mGnssMeasurementListener = new GnssMeasurementsEvent.Callback() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -464,63 +467,61 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 public void onGnssMeasurementsReceived(GnssMeasurementsEvent eventArgs) {
                     final Collection<GnssMeasurement> measurements = eventArgs.getMeasurements();
                     String s = "";
-                    for (GnssMeasurement m : measurements){
+                    for (GnssMeasurement m : measurements) {
                         String constellation = "None";
-                        switch (m.getConstellationType())
-                        {
-                            case GnssStatus.CONSTELLATION_BEIDOU:
-                            {
+                        switch (m.getConstellationType()) {
+                            case GnssStatus.CONSTELLATION_BEIDOU: {
                                 constellation = "BDU";
-                                break;}
-                            case GnssStatus.CONSTELLATION_GALILEO:{
+                                break;
+                            }
+                            case GnssStatus.CONSTELLATION_GALILEO: {
                                 constellation = "GAL";
                                 break;
                             }
-                            case GnssStatus.CONSTELLATION_GLONASS:{
+                            case GnssStatus.CONSTELLATION_GLONASS: {
                                 constellation = "GLN";
                                 break;
                             }
-                            case GnssStatus.CONSTELLATION_GPS:{
-                                constellation="GPS";
+                            case GnssStatus.CONSTELLATION_GPS: {
+                                constellation = "GPS";
                                 break;
                             }
 
-                            case GnssStatus.CONSTELLATION_QZSS:{
-                                constellation="QZSS";
+                            case GnssStatus.CONSTELLATION_QZSS: {
+                                constellation = "QZSS";
                                 break;
                             }
-                            case GnssStatus.CONSTELLATION_SBAS:{
-                                constellation="SBAS";
+                            case GnssStatus.CONSTELLATION_SBAS: {
+                                constellation = "SBAS";
                                 break;
                             }
-                            case GnssStatus.CONSTELLATION_UNKNOWN:{
-                                constellation="UNK";
+                            case GnssStatus.CONSTELLATION_UNKNOWN: {
+                                constellation = "UNK";
                                 break;
                             }
 
                         }
 
 
-                        s += "sat:" + constellation+Integer.toString(m.getSvid()) + ' ';
-                        s += "pdr:"+Double.toString(m.getPseudorangeRateMetersPerSecond()) + ' ';
-                        if (m.hasSnrInDb()){
-                            s +=  "snr:"+Double.toString(m.getSnrInDb()) + ' ';
+                        s += "sat:" + constellation + Integer.toString(m.getSvid()) + ' ';
+                        s += "pdr:" + Double.toString(m.getPseudorangeRateMetersPerSecond()) + ' ';
+                        if (m.hasSnrInDb()) {
+                            s += "snr:" + Double.toString(m.getSnrInDb()) + ' ';
                         }
 
-                        if (m.hasCarrierCycles()){
-                            s+= "cyc:" + Long.toString(m.getCarrierCycles()) + ' ';
-                            if (m.hasCarrierFrequencyHz()){
-                                s+="freq:" + Float.toString(m.getCarrierFrequencyHz());
+                        if (m.hasCarrierCycles()) {
+                            s += "cyc:" + Long.toString(m.getCarrierCycles()) + ' ';
+                            if (m.hasCarrierFrequencyHz()) {
+                                s += "freq:" + Float.toString(m.getCarrierFrequencyHz());
                             }
                         }
 
-                        s+= "Cn0:" + Double.toString(m.getCn0DbHz())+ ' ';
+                        s += "Cn0:" + Double.toString(m.getCn0DbHz()) + ' ';
 
-                        s+='\n';
+                        s += '\n';
 
 
                     }
-
 
 
                     final String s_final = s;
@@ -546,18 +547,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     super.onStatusChanged(status);
                 }
             };
-        }
-
-        else {
+        } else {
             TextView pdr = (TextView) findViewById(R.id.pdr_value);
             pdr.setText("Pdr Not Available");
         }
     }
 
 
-
 }
-
-
-
-
