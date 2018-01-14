@@ -68,8 +68,6 @@ public class SaveActivity extends AppCompatActivity {
 
             TableRow grid = (TableRow) findViewById(R.id.grid);
             grid.setVisibility(View.INVISIBLE);
-
-            TextView grid_t = (TextView) findViewById(R.id.grid_t);
         }
 
         else {
@@ -90,6 +88,35 @@ public class SaveActivity extends AppCompatActivity {
 
         } else {
             room.setText(InstitutionActivity.choices[4]);
+        }
+
+        if (InstitutionActivity.choices[3].equals("In a corridor/hall")){
+            room.setText("/");
+            TableRow lat_row = (TableRow) findViewById(R.id.lat_row);
+            TableRow lon_row = (TableRow) findViewById(R.id.lon_row);
+            lat_row.setVisibility(View.VISIBLE);
+            lon_row.setVisibility(View.VISIBLE);
+            lat.setText(MainActivity.parameters.get("latitude"));
+            lon.setText(MainActivity.parameters.get("longitude"));
+
+            if (MainActivity.parameters.containsKey("qrcode")){
+                TableRow QR = (TableRow) findViewById(R.id.qr);
+                QR.setVisibility(View.VISIBLE);
+                TextView qr_value = (TextView) findViewById(R.id.qr_value);
+                qr_value.setText(MainActivity.parameters.get("qrcode"));
+
+                TableRow lat_QR = (TableRow) findViewById(R.id.lat_qr);
+                lat_QR.setVisibility(View.VISIBLE);
+                TextView lat_qr_value = (TextView) findViewById(R.id.lat_qr_value);
+                lat_qr_value.setText(MainActivity.parameters.get("latitude_qr"));
+
+                TableRow long_QR = (TableRow) findViewById(R.id.long_qr);
+                long_QR.setVisibility(View.VISIBLE);
+                TextView long_qr_value = (TextView) findViewById(R.id.long_qr_value);
+                long_qr_value.setText(MainActivity.parameters.get("longitude_qr"));
+
+            }
+
         }
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());

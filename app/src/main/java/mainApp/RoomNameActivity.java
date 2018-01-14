@@ -22,7 +22,6 @@ import org.json.*;
 
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.google.common.collect.BiMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,10 +35,7 @@ import java.util.ArrayList;
 
 public class RoomNameActivity extends AppCompatActivity {
 
-    //final HashMap<Integer,String> IRooms = new HashMap<>();
-    //final ArrayList<String> IRooms = new ArrayList<>();
 
-//    final BiMap<Integer,String> IMap = new Bidi();
     final ArrayList<String> IRooms = new ArrayList<>();
     final ArrayList<String> MRooms = new ArrayList<>();
     final ArrayList<String> NRooms = new ArrayList<>();

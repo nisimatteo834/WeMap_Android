@@ -15,6 +15,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Stefano on 07/12/2017.
  */
@@ -71,17 +77,23 @@ public class InOutCorrActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> av, View v, int pos, long id)
             {
+                setInCorr(inOutCorr[pos]);
                 // Start NewActivity.class
                 InstitutionActivity.setChoice(inOutCorr[pos],3);
-                if (inOutCorr[pos].equals("Inside a room") || inOutCorr[pos].equals("In a corridor/hall")) {
-                    setInCorr(inOutCorr[pos]);
+                if (inOutCorr[pos].equals("Inside a room")){// || inOutCorr[pos].equals("In a corridor/hall")) {
                     Intent myIntent4 = new Intent(InOutCorrActivity.this,
                             RoomNameActivity.class);
                     startActivity(myIntent4);
                 }
 
+                else if (inOutCorr[pos].equals("In a corridor/hall")){
+
+                    Intent myIntent = new Intent(InOutCorrActivity.this,Corridor.class);
+                    startActivity(myIntent);
+
+                }
+
                 else{
-                    setInCorr(inOutCorr[pos]);
                     Intent myIntent4 = new Intent(InOutCorrActivity.this,
                             SaveActivity.class);
                     startActivity(myIntent4);
@@ -91,6 +103,8 @@ public class InOutCorrActivity extends AppCompatActivity {
 
 
     }
+
+
 
 
 

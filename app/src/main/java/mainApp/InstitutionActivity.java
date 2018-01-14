@@ -24,7 +24,7 @@ public class InstitutionActivity extends AppCompatActivity {
 
 
 
-    public static String[] choices = new String[]{"Institution","location","building","inOutCorr", "roomName","roomPart","roomCode"};
+    public static String[] choices = new String[]{"Institution","location","building","inOutCorr", "roomName","roomPart","roomCode","QRcode"};
 
     public static String[] getChoices() {
         return choices;

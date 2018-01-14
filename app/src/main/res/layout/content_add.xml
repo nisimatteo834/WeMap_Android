@@ -19,7 +19,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Insititution" />
 
@@ -34,7 +34,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location" />
 
@@ -49,7 +49,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Building" />
 
@@ -64,7 +64,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="96dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Environment" />
 
@@ -79,7 +79,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Room Name" />
 
@@ -97,15 +97,17 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Grid" />
 
             <TextView
                 android:id="@+id/grid_t"
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
+
+
 
         <TableRow
             android:id="@+id/speed_test"
@@ -113,13 +115,13 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Speed Download" />
 
             <TextView
                 android:id="@+id/speed_test_value"
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
 
@@ -132,7 +134,7 @@
             android:visibility="invisible">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lat." />
 
@@ -149,7 +151,7 @@
             android:visibility="invisible">
 
             <TextView
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
 
                 android:layout_height="wrap_content"
                 android:text="Long" />
@@ -159,6 +161,58 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
+
+        <TableRow
+            android:id="@+id/qr"
+            android:layout_width="match_parent"
+            android:visibility="invisible"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QrCode" />
+
+            <TextView
+                android:id="@+id/qr_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/lat_qr"
+            android:layout_width="match_parent"
+            android:visibility="invisible"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LatQrCode" />
+
+            <TextView
+                android:id="@+id/lat_qr_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/long_qr"
+            android:layout_width="match_parent"
+            android:visibility="invisible"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LongQrCode" />
+
+            <TextView
+                android:id="@+id/long_qr_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
 
         <TableRow
             android:layout_width="match_parent"
