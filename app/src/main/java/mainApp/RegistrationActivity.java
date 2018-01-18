@@ -1,6 +1,7 @@
 package mainApp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +23,7 @@ import java.util.Map;
  * Created by Navid on 1/16/2018.
  */
 
-public class RegistrationActivity extends mainApp.Menu implements View.OnClickListener{
+public class RegistrationActivity extends mainApp.Menu{
     String registrationUrl = "http://5.89.130.153/registration.php";
     private EditText editTextPhoneNo,editTextEmail;
     private Button buttonRegister,buttonSkip;
@@ -45,6 +46,21 @@ public class RegistrationActivity extends mainApp.Menu implements View.OnClickLi
 
         wifi = new Wifi(RegistrationActivity.this);
         device = new Device();
+
+        buttonRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerUser();
+            }
+        });
+
+        buttonSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(myIntent);
+            }
+        });
         //progressDialog.setMessage();
 
 
@@ -88,11 +104,4 @@ public class RegistrationActivity extends mainApp.Menu implements View.OnClickLi
         requestQueue.add(request);
     }
 
-    @Override
-
-    public void onClick(View view) {
-        if (view == buttonRegister)
-            registerUser();
-
-    }
 }
