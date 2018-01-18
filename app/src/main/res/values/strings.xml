@@ -40,6 +40,10 @@
         <item>8</item>
         <item>9</item>
     </string-array>
+    <string name="action_add">Add Meas.</string>
+    <string name="action_signup">Sign Up/In</string>
+    <string name="action_history">History</string>
+
 
 
 
