@@ -1,44 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="80dp">
 
         <TextView
-            android:text="Phone Number"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Phone Number" />
+
         <EditText
             android:id="@+id/phoneNumber"
-            android:hint="Enter Phone Number"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="Enter Phone Number" />
 
         <TextView
-            android:text="Email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Email" />
 
         <EditText
             android:id="@+id/email"
-            android:hint="Enter Email"
-            android:inputType="textEmailAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="Enter Email"
+            android:inputType="textEmailAddress" />
+
         <Button
-            android:text="Register User"
             android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Register User" />
+
         <Button
-            android:text="Skip"
             android:id="@+id/buttonSkip"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Skip" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
