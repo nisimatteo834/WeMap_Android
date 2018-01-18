@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Matteo on 13/12/2017.
  */
 
-public class SaveActivity extends AppCompatActivity {
+public class SaveActivity extends Menu {
 
     RequestQueue requestQueue;
     //String insertUrl = "http://192.168.43.135:8080/insert.php";//"http://192.168.1.65/insert.php";

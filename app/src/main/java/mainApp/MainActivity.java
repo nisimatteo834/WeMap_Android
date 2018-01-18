@@ -47,7 +47,7 @@ import android.widget.Button;
 import static android.graphics.Color.GREEN;
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends mainApp.Menu implements ActivityCompat.OnRequestPermissionsResultCallback {
     LocationManager locationManager = null;
     Wifi wifi = null;
     public Location location;
@@ -241,36 +241,38 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         super.onDestroy();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId())
-        {
-            case R.id.action_history:
-            {
-                Intent myIntent = new Intent(getApplicationContext(),History.class);
-                startActivity(myIntent);
-                break;
-            }
-            case R.id.action_add:
-            {
-                break;
-            }
-            case R.id.action_signup:
-            {
-                break;
-            }
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu,menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        switch (item.getItemId())
+//        {
+//            case R.id.action_history:
+//            {
+//                Intent myIntent = new Intent(getApplicationContext(),History.class);
+//                startActivity(myIntent);
+//                break;
+//            }
+//            case R.id.action_add:
+//            {
+//                break;
+//            }
+//            case R.id.action_signup:
+//            {
+//                Intent myIntent = new Intent(getApplicationContext(),History.class);
+//                startActivity(myIntent);
+//                break;
+//            }
+//        }
+//
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void initLocationService(Context context, LocationListener listener) {
 
