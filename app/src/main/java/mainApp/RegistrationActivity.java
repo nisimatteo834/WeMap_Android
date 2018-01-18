@@ -28,7 +28,7 @@ import java.util.Map;
  */
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener{
-    String registraionUrl = "http://5.89.130.153/registraion.php";
+    String registraionUrl = "http://5.89.130.153/registration.php";
     private EditText eidtTextPhoneNo,editTextEmail;
     private Button buttonRegister,buttonSkip;
     private ProgressDialog progressDialog;
