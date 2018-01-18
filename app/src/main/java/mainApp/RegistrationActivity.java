@@ -1,15 +1,10 @@
 package mainApp;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -28,8 +23,8 @@ import java.util.Map;
  */
 
 public class RegistrationActivity extends mainApp.Menu implements View.OnClickListener{
-    String registraionUrl = "http://5.89.130.153/registration.php";
-    private EditText eidtTextPhoneNo,editTextEmail;
+    String registrationUrl = "http://5.89.130.153/registration.php";
+    private EditText editTextPhoneNo,editTextEmail;
     private Button buttonRegister,buttonSkip;
     private ProgressDialog progressDialog;
     private Wifi wifi = null;
@@ -41,7 +36,7 @@ public class RegistrationActivity extends mainApp.Menu implements View.OnClickLi
         setContentView(R.layout.activity_registration);
 
         editTextEmail = (EditText) findViewById(R.id.email);
-        eidtTextPhoneNo = (EditText) findViewById(R.id.phoneNumber);
+        editTextPhoneNo = (EditText) findViewById(R.id.phoneNumber);
 
         buttonRegister = (Button) findViewById(R.id.buttonRegister);
         buttonSkip= (Button) findViewById(R.id.buttonSkip);
@@ -56,13 +51,13 @@ public class RegistrationActivity extends mainApp.Menu implements View.OnClickLi
     }
     private void registerUser(){
         final String email = editTextEmail.getText().toString().trim();
-        final String phone_No = eidtTextPhoneNo.getText().toString().trim();
+        final String phone_No = editTextPhoneNo.getText().toString().trim();
         final String phoneMac = wifi.getMacAddr();
         final String phoneModel = device.getDeviceName();
 
         progressDialog.setMessage("Registering user...");
         progressDialog.show();
-        StringRequest request = new StringRequest(Request.Method.POST, registraionUrl, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, registrationUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 progressDialog.dismiss();

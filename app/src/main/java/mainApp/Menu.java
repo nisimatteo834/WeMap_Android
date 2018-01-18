@@ -35,7 +35,7 @@ public class Menu extends AppCompatActivity {
             }
             case R.id.action_signup:
             {
-                Intent myIntent = new Intent(getApplicationContext(),History.class);
+                Intent myIntent = new Intent(getApplicationContext(),RegistrationActivity.class);
                 startActivity(myIntent);
                 break;
             }
