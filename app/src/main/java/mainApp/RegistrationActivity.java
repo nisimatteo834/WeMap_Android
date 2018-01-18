@@ -27,7 +27,7 @@ import java.util.Map;
  * Created by Navid on 1/16/2018.
  */
 
-public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener{
+public class RegistrationActivity extends mainApp.Menu implements View.OnClickListener{
     String registraionUrl = "http://5.89.130.153/registration.php";
     private EditText eidtTextPhoneNo,editTextEmail;
     private Button buttonRegister,buttonSkip;
