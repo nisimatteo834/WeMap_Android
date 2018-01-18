@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.GnssMeasurement;
 import android.location.GnssMeasurementsEvent;
 import android.location.GnssStatus;
@@ -27,6 +29,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -40,9 +44,10 @@ import android.content.Context;
 
 import android.widget.Button;
 
+import static android.graphics.Color.GREEN;
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends mainApp.Menu implements ActivityCompat.OnRequestPermissionsResultCallback {
     LocationManager locationManager = null;
     Wifi wifi = null;
     public Location location;
@@ -125,10 +130,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         plus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+                plus.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.green_button)));
+                System.out.println("Changing color...");
 
                 String result = "";
                 try {
+                    System.out.println("Running Speed Test...");
                     result = new SpeedTestTask(getApplicationContext()).execute().get();
+                    System.out.println("Running Speed Test...Done");
+
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -218,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         super.onResume();
         wifi.setWifiEnabled(true);
         this.checkGPS();
+        plus.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+
 
         wifi.updateValues();
         this.initLocationService(getApplicationContext(), locationListener);
@@ -228,6 +240,39 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     protected void onDestroy() {
         super.onDestroy();
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu,menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        switch (item.getItemId())
+//        {
+//            case R.id.action_history:
+//            {
+//                Intent myIntent = new Intent(getApplicationContext(),History.class);
+//                startActivity(myIntent);
+//                break;
+//            }
+//            case R.id.action_add:
+//            {
+//                break;
+//            }
+//            case R.id.action_signup:
+//            {
+//                Intent myIntent = new Intent(getApplicationContext(),History.class);
+//                startActivity(myIntent);
+//                break;
+//            }
+//        }
+//
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void initLocationService(Context context, LocationListener listener) {
 

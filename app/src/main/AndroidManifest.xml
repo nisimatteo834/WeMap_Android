@@ -22,8 +22,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".HomeActivity"
-            android:label="WeMap"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="WeMap" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,8 +31,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="WeMap"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="WeMap">
             <intent-filter>
                 <action android:name="android.intent.action.CALL" />
 
@@ -41,19 +39,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity_Navid"
-            android:label="WeMap"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN_NAVID" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".InstitutionActivity"
-            android:label="WeMap"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="WeMap">
             <intent-filter>
                 <action android:name="android.intent.action.INSTITUTION" />
 
@@ -69,6 +56,7 @@
         <activity android:name=".OnboardingActivity"/>
         <activity android:name=".RoomGridActivity"/>
         <activity android:name=".Corridor" />
+        <activity android:name=".History" />
 
 
         <service
