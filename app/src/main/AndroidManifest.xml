@@ -56,7 +56,9 @@
         <activity android:name=".OnboardingActivity"/>
         <activity android:name=".RoomGridActivity"/>
         <activity android:name=".Corridor" />
-        <activity android:name=".History" />
+        <activity android:name=".RegistrationActivity" />
+
+
 
 
         <service
