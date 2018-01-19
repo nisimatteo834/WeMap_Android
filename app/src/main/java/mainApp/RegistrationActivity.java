@@ -1,6 +1,7 @@
 package mainApp;
 
 import android.app.ProgressDialog;
+import android.app.VoiceInteractor;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,8 +14,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +30,8 @@ import java.util.Map;
  */
 
 public class RegistrationActivity extends mainApp.Menu{
-    String registrationUrl = "http://5.89.130.153/registration.php";
+    String registrationUrl = "http://wemapserver.sytes.net//registration.php";
+    String userUrl = "http://wemapserver.sytes.net//user.php";
     private EditText editTextPhoneNo,editTextEmail;
     private Button buttonRegister,buttonSkip;
     private ProgressDialog progressDialog;
@@ -46,6 +53,41 @@ public class RegistrationActivity extends mainApp.Menu{
 
         wifi = new Wifi(RegistrationActivity.this);
         device = new Device();
+        final String mac = wifi.getMacAddr();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, userUrl, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                System.out.println(response.toString());
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray users = jsonObject.getJSONArray("user");
+                    JSONObject user = users.getJSONObject(0);
+                    String phone_no = user.getString("phone_no");
+                    String email = user.getString("email");
+                    editTextEmail.setText(email);
+                    editTextPhoneNo.setText(phone_no);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.append(error.getMessage());
+                Toast.makeText(RegistrationActivity.this, "Something went wrong",Toast.LENGTH_LONG).show();
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError{
+                Map<String,String> parameters = new HashMap<String,String>();
+                parameters.put("phone_mac", mac);
+                return parameters;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
 
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,8 +103,6 @@ public class RegistrationActivity extends mainApp.Menu{
                 startActivity(myIntent);
             }
         });
-        //progressDialog.setMessage();
-
 
     }
     private void registerUser(){
@@ -96,7 +136,6 @@ public class RegistrationActivity extends mainApp.Menu{
                 parameters.put("phone_mac",phoneMac );
                 parameters.put("model",phoneModel );
                 return parameters;
-                //return super.getParams();
             }
         };
 
