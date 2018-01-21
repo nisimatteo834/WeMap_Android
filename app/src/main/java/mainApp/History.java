@@ -40,12 +40,12 @@ public class History extends Menu {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //String historyurl = "http://wemapserver.sytes.net/history.php";
-        String historyurl = "http://wemapserver.sytes.net/history_Matteo.php";
+        String historyurl = "http://wemapserver.sytes.net/history.php";
+        //String historyurl = "http://wemapserver.sytes.net/history_Matteo.php";
         Wifi wifi = new Wifi(getApplicationContext());
         final String mac = wifi.getMacAddr();
         historyurl += "?phone_mac="+mac;
-        setContentView(R.layout.second_screen);
+        setContentView(R.layout.history_screen);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, historyurl, new Response.Listener<String>() {
             @Override
