@@ -36,7 +36,6 @@ import java.util.Map;
 
 public class History extends Menu {
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +77,7 @@ public class History extends Menu {
                         result.add(toParse);
                     }
 
-                    final ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(getApplicationContext(), R.layout.row, result);
+                    final ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(getApplicationContext(), R.layout.row_history, result);
                     ListView listView4 = (ListView) findViewById(R.id.newlistview);
                     listView4.setAdapter(adapter4);
 

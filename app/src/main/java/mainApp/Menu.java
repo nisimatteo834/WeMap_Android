@@ -33,6 +33,11 @@ public class Menu extends AppCompatActivity {
                 startActivity(myIntent);
                 break;
             }
+            case R.id.action_home:{
+                Intent myIntent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(myIntent);
+                break;
+            }
             case R.id.action_signup:
             {
                 Intent myIntent = new Intent(getApplicationContext(),RegistrationActivity.class);

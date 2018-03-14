@@ -86,15 +86,24 @@ public class Corridor extends AppCompatActivity {
                     startActivity(myIntent);
                     if (MainActivity.parameters.containsKey("qrcode"))
                         MainActivity.parameters.remove("qrcode");
+                    if (MainActivity.parameters.containsKey("latitude_qr"))
+                        MainActivity.parameters.remove("latitude_qr");
+                    if (MainActivity.parameters.containsKey("longitude_qr"))
+                        MainActivity.parameters.remove("longitude_qr");
 
                 }
 
                 else{
+                    MainActivity.parameters.put("allrooms_id","696");
                     Intent myIntent4 = new Intent(Corridor.this,
                             SaveActivity.class);
                     startActivity(myIntent4);
                     if (MainActivity.parameters.containsKey("qrcode"))
                         MainActivity.parameters.remove("qrcode");
+                    if (MainActivity.parameters.containsKey("latitude_qr"))
+                        MainActivity.parameters.remove("latitude_qr");
+                    if (MainActivity.parameters.containsKey("longitude_qr"))
+                        MainActivity.parameters.remove("longitude_qr");
                 }
             }
         });
@@ -115,7 +124,7 @@ public class Corridor extends AppCompatActivity {
                     //converting the data to json
                     String qrDetected = result.getContents();
                     qrDetected = qrDetected.replaceAll("\\s+","");
-                    qrDetected = qrDetected.replaceAll("[{}]","");
+                    qrDetected = qrDetected.replaceAll("[{}'u]","");
                     Map<String, String> myMap = new HashMap<String, String>();
                     String[] pairs = qrDetected.split(",");
                     for (int i=0;i<pairs.length;i++) {
@@ -126,7 +135,7 @@ public class Corridor extends AppCompatActivity {
 
                     MainActivity.parameters.put("latitude_qr",myMap.get("lat"));
                     MainActivity.parameters.put("longitude_qr",myMap.get("long"));
-                    MainActivity.parameters.put("qrcode",myMap.get("qrcode"));
+                    MainActivity.parameters.put("qrcode",myMap.get("id"));
 
 
                     Toast.makeText(this, qrDetected, Toast.LENGTH_LONG).show();

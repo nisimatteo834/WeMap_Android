@@ -192,8 +192,14 @@ public class MainActivity extends mainApp.Menu implements ActivityCompat.OnReque
                 parameters.put("pseudorange", pdrValue);
                 parameters.put("RSSI", rssi.getText().toString());
                 parameters.put("speedInternet", result);
-                //change it
-                //parameters.put("allrooms_id", "370");
+
+                if (parameters.containsKey("qrcode"))
+                    parameters.remove("qrcode");
+                if (parameters.containsKey("latitude_qr"))
+                    parameters.remove("latitude_qr");
+                if (parameters.containsKey("longitude_qr"))
+                    parameters.remove("longitude_qr");
+
 
                 Intent myIntent = new Intent(MainActivity.this, InstitutionActivity.class);
                 startActivity(myIntent);

@@ -94,6 +94,7 @@ public class InOutCorrActivity extends AppCompatActivity {
                 }
 
                 else{
+                    MainActivity.parameters.put("allrooms_id","696");
                     Intent myIntent4 = new Intent(InOutCorrActivity.this,
                             SaveActivity.class);
                     startActivity(myIntent4);

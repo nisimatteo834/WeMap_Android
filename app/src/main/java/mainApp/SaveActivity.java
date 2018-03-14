@@ -1,9 +1,12 @@
 package mainApp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +32,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Matteo on 13/12/2017.
  */
 
-public class SaveActivity extends Menu {
+public class SaveActivity extends mainApp.Menu {
 
     RequestQueue requestQueue;
     //String insertUrl = "http://192.168.43.135:8080/insert.php";//"http://192.168.1.65/insert.php";
@@ -37,6 +40,8 @@ public class SaveActivity extends Menu {
     //String insertUrl = "http://5.89.130.153/insert.php";
     String insertUrl = "http://wemapserver.sytes.net/insert.php";
     boolean flag = false;
+    public android.app.AlertDialog save_diag;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +155,38 @@ public class SaveActivity extends Menu {
                             });
                             System.out.println("OK");
                         } else {
+
+                            final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(SaveActivity.this);
+                            builder.setTitle("Data Uploaded").setMessage("Data uploaded correctly!\nYou can insert a new measurement or look at your previous measurements in the history\nThank you!").setPositiveButton("Home", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    Intent myIntent = new Intent(getApplicationContext(),mainApp.MainActivity.class);
+                                    startActivity(myIntent);
+                                }
+                            }).setNegativeButton("History", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    Intent myIntent = new Intent(getApplicationContext(),History.class);
+                                    startActivity(myIntent);
+                                }
+                            });
+
+                            save_diag = builder.create();
+                            save_diag.show();
+
+
+
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+//                            builder.setPositiveButton("Go to Home Page", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    Intent myIntent = new Intent(getApplicationContext(),MainActivity.class);
+//                                }
+//                            });
+//
+//                            AlertDialog dialog = builder.create();
+//                            dialog.show();
+
                             TextView result = (TextView) findViewById(R.id.results);
                             result.setText("DATA UPLOADED");
                             System.out.println("OK");
